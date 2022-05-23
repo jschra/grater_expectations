@@ -35,9 +35,9 @@ global:
 
 tutorial:
   # -- AWS configurations
-  store_bucket: "ge-store-bucket-jorik"
+  store_bucket: "ge-store-bucket-tutorial"
   store_bucket_prefix: "expectations"
-  site_bucket: "ge-site-bucket-jorik"
+  site_bucket: "ge-site-bucket-tutorial"
   site_bucket_prefix: ""
   docker_image_name: tutorial_image
 
@@ -48,8 +48,8 @@ tutorial:
   run_name_template: Tutorial run %d-%m-%Y
 
   # -- Data input parameters
-  data_bucket: "ge-data-bucket-jorik"
-  prefix_example: "data/"
+  data_bucket: "ge-data-bucket-tutorial"
+  prefix_data: "data/"
 
 test:
   # -- AWS configurations
@@ -67,4 +67,4 @@ test:
 
   # -- Data input parameters
   data_bucket: "ge-data-bucket-jorik"
-  prefix_example: "data/"
+  prefix_data: "data/"

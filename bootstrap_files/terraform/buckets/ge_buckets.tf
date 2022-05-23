@@ -1,5 +1,5 @@
 # -------------------------------------------------------------
-# Great expectations output bucket
+# Great expectations output S3 bucket
 # -------------------------------------------------------------
 resource "aws_s3_bucket" "ge_bucket" {
   bucket        = var.ge-bucket-name
@@ -23,7 +23,7 @@ resource "aws_s3_bucket_public_access_block" "ge_bucket" {
 }
 
 # -------------------------------------------------------------
-# Great expectations website bucket
+# Great expectations website S3 bucket
 # -------------------------------------------------------------
 resource "aws_s3_bucket" "ge_site_bucket" {
   bucket        = var.ge-site-bucket-name

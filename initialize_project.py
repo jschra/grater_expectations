@@ -54,7 +54,7 @@ def main_program():
             "checkpoint_name",
             "run_name_template",
             "data_bucket",
-            "prefix_example",
+            "prefix_data",
         ]
         evaluate_config_keys(cfg, project_keys, args.project)
 
@@ -391,8 +391,7 @@ def generate_terraform_provider_config(args, cfg_global: dict):
         Global config containing AWS account details
     """
     # -- 1. Generate document
-    document = f"""
-# NOTE: It's best to run Terraform using state stored in a state bucket. For more
+    document = f"""# NOTE: It's best to run Terraform using state stored in a state bucket. For more
 # information, please refer to https://www.terraform.io/language/state/remote
 terraform {{
   required_providers {{
