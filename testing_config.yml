@@ -1,0 +1,70 @@
+# This is the configuration file that can be used to bootstrap files for your Great
+# Expectations project.
+
+# For the overall project, there are global configurations which contain:
+# - account_id: the account_id of the AWS account to be used
+# - region: the region used on AWS to deploy resources
+
+# Make sure to set these to the AWS account you intend to use
+
+# For each project, the following parameters can be found:
+# - store_bucket: the S3 bucket that can be used to store Great Expectations outputs
+# - store_bucket_prefix: the prefix (or 'folder') in which the outputs should be stored
+# - site_bucket: the S3 bucket that can be used for rendering Data Docs (static GE website)
+# - site_bucket_prefix: the prefix (or 'folder') in which the files for the site should be stored
+# - site_name: the name that should be given to the rendered website
+# - docker_image_name: the name that will be used for the docker image and ECR repository
+#   to store the image
+# - expectations_suite_name: the name for the expectation suite you will generate (
+#   an expectations suite is GE yargon for a bundle of expectations you will use to validate
+#   a dataset)
+# - checkpoint_name: name for the checkpoint that will be used to validate your dataset
+#   at runtime. Checkpoints are used to bundle expectation suites with data to
+#   validate at runtime
+# - run_name_template: the template to be used to tag validation runs with. If given
+#   date string formats, these will be rendered at runtime using the date at runtime
+# - data_bucket: the S3 bucket in which the data resides
+# - prefix_example: prefix of an example tile that can be used to generate an expectation
+#   suite for
+
+# NOTE: for names of S3 buckets, only use hyphens ('-') and make sure they are globally unique
+
+global:
+  account_id: "541219063706"
+  region: "eu-west-1"
+
+tutorial:
+  # -- AWS configurations
+  store_bucket: "ge-store-bucket-jorik"
+  store_bucket_prefix: "expectations"
+  site_bucket: "ge-site-bucket-jorik"
+  site_bucket_prefix: ""
+  docker_image_name: tutorial_image
+
+  # -- Great expectations parameters
+  site_name: "Tutorial expectations"
+  expectations_suite_name: "tutorial_test_suite"
+  checkpoint_name: "tutorial_checkpoint"
+  run_name_template: Tutorial run %d-%m-%Y
+
+  # -- Data input parameters
+  data_bucket: "ge-data-bucket-jorik"
+  prefix_example: "data/"
+
+test:
+  # -- AWS configurations
+  store_bucket: "ge-store-bucket-jorik"
+  store_bucket_prefix: "expectations"
+  site_bucket: "ge-site-bucket-jorik"
+  site_bucket_prefix: ""
+  docker_image_name: tutorial_image
+
+  # -- Great expectations parameters
+  site_name: "Tutorial expectations"
+  expectations_suite_name: "tutorial_test_suite"
+  checkpoint_name: "tutorial_checkpoint"
+  run_name_template: Tutorial run %d-%m-%Y
+
+  # -- Data input parameters
+  data_bucket: "ge-data-bucket-jorik"
+  prefix_example: "data/"
