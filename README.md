@@ -116,20 +116,29 @@ python initialize_project.py --project tutorial
 ```
 
 When the initialization runs correctly, a new project directory with related files will be set up for you and a Python notebook will be opened to start writing your first
-expectation suite. The newly created directory will look like this:
+expectation suite. The newly created directory* will look like this:
 
 ![Example project directory](./docs/images/example_project_directory.png)
+
+NOTE: *normal* project directories will not contain a data directory. This is only the case for the tutorial
+
+<br>
+<hr>
 
 ## Writing expectations
 
 After initializing a new project, an iPython notebook called expectation_suite.ipynb will automatically open, containing information on how to start configuring your project and writing your expectations. If you want to (re-)open said notebook at a later stage, you can do so by calling the following command from the terminal in the project directory:
 
 ```bash
-conda activate wwf_ge_testing
+conda activate grater_expectations
 nbopen expectation_suite.ipynb
 ```
 
-Apart from the guidance the notebook provides, it is **important to note** that the majority of the functions used in the notebook should be stored in supporting_functions.py. This is because many functions in this notebook are also needed in the lambda function and by storing these in a seperate Python file, you ensure your code is DRY.
+Apart from the guidance the notebook provides, it is **important to note** that the majority of the functions used in the notebook should be stored in supporting_functions.py. This is because many functions in this notebook are also needed in the lambda function and by storing these in a seperate Python file, you ensure your code is DRY. This supporting_functions.py is also used
+in the Docker container image used in the Lambda function.
+
+<br>
+<hr>
 
 ## Configuring the validation lambda
 
@@ -141,6 +150,9 @@ When `initialize_project.py` is run, an initial setup for this can be found in l
 2. Event information for loading data: in order for the lambda function to figure out what to load, the lambda has been set up to expect such information in the event parameter passed at runtime. E.g. for WUR input testing for Gabon, the prefix of the tile to be loaded from S3 is passed in the event during runtime (in s3_key). Along with data loading logic, this is sufficient for the lambda to retrieve a batch of data
 
 After ensuring that the Lambda can load new data and knows what to load, the next step is to deploy the lambda as a Docker image on ECR
+
+<br>
+<hr>
 
 ## Deploying the lambda as Docker image on ECR
 
@@ -169,6 +181,9 @@ export AWS_SECRET_ACCESS_KEY=<enter_aws_secret_access_key_here>
 # Run script (from project directory)
 sh build_imstage_store_on_ecr.sh
 ```
+
+<br>
+<hr>
 
 ## Deploying the Lambda and incorporating it in Step Functions
 
