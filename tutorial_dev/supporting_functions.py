@@ -101,6 +101,30 @@ def load_csv_from_s3(prefix: str, delimiter: str = ",") -> pd.DataFrame:
     return df
 
 
+def load_csv_from_s3_2(
+    s3_bucket_client: boto3.resource("s3").Bucket, file_key: str
+) -> pd.DataFrame:
+    """Function that loads a csv from S3 into a pandas DataFrame
+
+    Parameters
+    ----------
+    s3_bucket_client : boto3.resource
+        Instantiated s3 bucket client using boto3. Note that it should already
+        be pointing to the bucket from which you want to load objects
+    file_key : str
+        Key to the channel within the tile to be loaded
+
+    Returns
+    -------
+    pd.DataFrame
+        The loaded data as pandas DataFrame
+    """
+    s3_object = s3_bucket_client.Object(file_key).get()
+    df_batch = pd.read_csv(s3_object["Body"])
+
+    return df_batch
+
+
 def get_common_prefixes(
     s3: boto3.client, bucket_name: str, prefix: str = "", delimiter: str = "/"
 ) -> list:
@@ -143,51 +167,40 @@ def get_common_prefixes(
 
 
 # AWS Lambda functions
-def tutorial_invoke_lambdas(
-    lambda_client: boto3.client("lambda"),
-    list_objects: list,
-    lambda_function: str = "grater_expectations_tutorial",
+def invoke_lambda_function(
+    lambda_client: boto3.client("lambda"), payload: bytes, lambda_function: str
 ) -> list:
-    """Function developed for the tutorial that takes a list of object prefixes and
-    invokes the testing lambda over them
+    """Function to invoke a Lambda function from Python
 
     Parameters
     ----------
     lambda_client : boto3.client
         An initialized boto3 client for lambda
-    list_objects : list
-        List of object prefixes for S3
-    lambda_function : str, optional
-        Name of the lambda function, by default "grater_expectations_tutorial"
+    payload : bytes
+        Payload to send to Lambda function in request, expected to contain a json 
+        encoded as bytes
+    lambda_function : str
+        Name of the lambda function
 
     Returns
     -------
     list
         A list of responses from the lambdas
     """
-    responses = []
-    for prefix in list_objects:
-        # -- Generate event, store as bytes
-        payload = {"object_prefix": prefix}
-        payload_bytes = json.dumps(payload).encode("utf-8")
+    # -- Invoke lambda
+    logger.info(
+        f"Invoking AWS Lambda {lambda_function} with payload: {payload.decode('utf-8')}"
+    )
+    response = lambda_client.invoke(
+        FunctionName=lambda_function, InvocationType="RequestResponse", Payload=payload,
+    )
 
-        # -- Invoke lambda
-        logger.info(f"Invoking AWS Lambda {lambda_function} with payload: {payload}")
-        response = lambda_client.invoke(
-            FunctionName=lambda_function,
-            InvocationType="RequestResponse",
-            Payload=payload_bytes,
+    if response["ResponseMetadata"]["HTTPStatusCode"] != 200:
+        raise RuntimeError(
+            "The lambda function has not run properly. Please check " " what went wrong"
         )
 
-        if response["ResponseMetadata"]["HTTPStatusCode"] != 200:
-            raise RuntimeError(
-                "The lambda function has not run properly. Please check "
-                " what went wrong"
-            )
-
-        responses.append(response)
-
-    return responses
+    return response
 
 
 # Additional functions for Great Expectations

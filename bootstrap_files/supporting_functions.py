@@ -1,4 +1,5 @@
 # -- Imports
+from locale import D_FMT
 import boto3
 import pandas as pd
 import ruamel.yaml as yaml
@@ -70,32 +71,26 @@ def get_file_keys_from_s3(
     return file_keys
 
 
-def load_csv_from_s3(prefix: str, delimiter: str = ",") -> pd.DataFrame:
-    """Function to load a csv file from S3 using pandas
+def load_csv_from_s3(
+    s3_bucket_client: boto3.resource("s3").Bucket, prefix: str
+) -> pd.DataFrame:
+    """Function to loads a csv from S3 into a pandas DataFrame
 
     Parameters
     ----------
+    s3_bucket_client : boto3.resource
+        Instantiated s3 bucket client using boto3. Note that it should already
+        be pointing to the bucket from which you want to load objects
     prefix : str
-        Prefix to file on S3
-    delimiter : str, optional
-        Delimiter used to seperate columns within the csv file
+        Prefix to csv object on S3
 
     Returns
     -------
     pd.DataFrame
-        Pandas DataFrame containing the data from the csv
+        The loaded csv object as pandas DataFrame
     """
-    # -- 1. Check if prefix was properly set
-    if not prefix.startswith("s3://"):
-        raise KeyError(
-            "In order for pandas to load a csv file from S3, the prefix to the file "
-            "should be structure as 's3://<bucket_name>/<object_prefix>. Ensure that "
-            "the provided prefix adheres to this format."
-        )
-
-    # -- 2. Load df from S3
-    logger.info(f"Loading {prefix} from S3")
-    df = pd.read_csv(prefix, sep=delimiter)
+    s3_object = s3_bucket_client.Object(prefix).get()
+    df = pd.read_csv(s3_object["Body"])
 
     return df
 
@@ -141,6 +136,43 @@ def get_common_prefixes(
     return results
 
 
+# Function to invoke AWS Lambda function
+def invoke_lambda_function(
+    lambda_client: boto3.client("lambda"), payload: bytes, lambda_function: str
+) -> list:
+    """Function to invoke a Lambda function from Python
+
+    Parameters
+    ----------
+    lambda_client : boto3.client
+        An initialized boto3 client for lambda
+    payload : bytes
+        Payload to send to Lambda function in request, expected to contain a json 
+        encoded as bytes
+    lambda_function : str
+        Name of the lambda function
+
+    Returns
+    -------
+    list
+        A list of responses from the lambdas
+    """
+    # -- Invoke lambda
+    logger.info(
+        f"Invoking AWS Lambda {lambda_function} with payload: {payload.decode('utf-8')}"
+    )
+    response = lambda_client.invoke(
+        FunctionName=lambda_function, InvocationType="RequestResponse", Payload=payload,
+    )
+
+    if response["ResponseMetadata"]["HTTPStatusCode"] != 200:
+        raise RuntimeError(
+            "The lambda function has not run properly. Please check " " what went wrong"
+        )
+
+    return response
+
+
 # Additional functions for Great Expectations
 def evaluate_ge_results(
     ge_results: ge.checkpoint.types.checkpoint_result.CheckpointResult,
@@ -157,7 +189,7 @@ def evaluate_ge_results(
         ]
         batch = batch_definition["batch_identifiers"].values()
         raise ge.exceptions.GreatExpectationsError(
-            f"The expectations run on the batch of data for {batch} for tile failed, "
+            f"The expectations run on the batch of data for {batch} failed, "
             "because not all expectations were successfully passed. Please review the "
             "results by generating the GE Data Docs and inspecting the failed run."
         )

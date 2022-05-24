@@ -223,6 +223,9 @@ After having deployed the Lambda function, it is now ready for use! There are ma
 
 Furthermore, additional Lambda's and/or logic can be set up to alert developers when validations fail (e.g. through Slack which is a built-in function of Great Expectations, or through using AWS SES to send e-mails). There are many things you can
 
+<br>
+<hr>
+
 ## Tutorial
 
 To help you get started with using grater_expectations, a tutorial is available for you to walk through. You can initialize this tutorial on your local machine by calling `python initialize_project.py -p tutorial` from your terminal at the root of this repository. The tutorial will then automatically be generated, after which a tutorial notebook will be opened for you.
