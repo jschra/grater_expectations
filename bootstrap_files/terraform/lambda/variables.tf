@@ -13,7 +13,7 @@ variable "ge-site-bucket-name" {
   description = "Name for bucket to be used to generate the GE site in"
 }
 
-variable "tutorial-bucket-name" {
+variable "ge-data-bucket-name" {
   type        = string
   description = "Name for bucket to be used to store tutorial data"
 }

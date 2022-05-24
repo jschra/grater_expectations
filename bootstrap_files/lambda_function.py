@@ -26,13 +26,13 @@ def lambda_handler(event, context):
     context = ge.data_context.DataContext()
     preprocessor = AwsPreprocessFunction(params)
 
-    # -- 2. Load data and extract tile information
+    # -- 2. Load data
     ### PUT YOUR DATA LOADING LOGIC HERE
     # To validate a data batch, data must be loaded to subsequently validate
     # Accordingly, in the lines below custom logic is required to load
     # a dataset as a pandas DataFrame in the df_batch argument
-    # To make the RuntimeBatchRequest complete, which is used by GE for the
-    # validations a tile, asset_name and batch_identifier are required
+    # To make the RuntimeBatchRequest complete, which is used by GE for running
+    # validations, asset_name and batch_identifier are required
     # NOTE: in order for this to properly run, an expectation suite must have been
     # previously generated!
     df_batch = load_data()  # Needs to be defined!
@@ -41,8 +41,8 @@ def lambda_handler(event, context):
 
     # -- 3. Generate batch request to run validations using a checkpoint
     batch_request = RuntimeBatchRequest(
-        datasource_name="wwf_data",
-        data_connector_name="wwf_runtime_data_connector",
+        datasource_name="runtime_data",
+        data_connector_name="runtime_data_connector",
         data_asset_name=asset_name,
         runtime_parameters={"batch_data": df_batch},
         batch_identifiers={"batch_identifier": batch_identifier,},
