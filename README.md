@@ -84,23 +84,23 @@ When you want to develop a new set of tests for a specific dataset, you first ne
 
 Nested under the project name (e.g. tutorial), the configuration file is expected to contain the following keys:
 
-> - store_bucket: the name of the S3 bucket that can be used to store Great Expectations outputs
-> - store_bucket_prefix: the prefix (or 'folder') in which the outputs should be stored
-> - site_bucket: the name of the S3 bucket that can be used for rendering Data Docs (static GE website)
-> - site_bucket_prefix: the prefix (or 'folder') in which the files for the site should be stored
-> - site_name: the name that should be given to the rendered website
-> - docker_image_name: the name that will be used for the docker image and ECR repository
+> - **store_bucket**: the name of the S3 bucket that can be used to store Great Expectations outputs
+> - **store_bucket_prefix**: the prefix (or 'folder') in which the outputs should be stored
+> - **site_bucket**: the name of the S3 bucket that can be used for rendering Data Docs (static GE website)
+> - **site_bucket_prefix**: the prefix (or 'folder') in which the files for the site should be stored
+> - **site_name**: the name that should be given to the rendered website
+> - **docker_image_name**: the name that will be used for the docker image and ECR repository
   to store the image
-> - expectations_suite_name: the name for the expectation suite you will generate (
+> - **expectations_suite_name**: the name for the expectation suite you will generate (
   an expectations suite is GE jargon for a bundle of expectations you will use to validate
   a dataset)
-> - checkpoint_name: name for the checkpoint that will be used to validate your dataset
+> - **checkpoint_name**: name for the checkpoint that will be used to validate your dataset
   at runtime. Checkpoints are used to bundle expectation suites with data to
   validate at runtime
-> - run_name_template: the template to be used to tag validation runs with. If given
+> - **run_name_template**: the template to be used to tag validation runs with. If given
   date string formats, these will be rendered at runtime using the date at runtime
-> - data_bucket: the name of the S3 bucket in which the data resides (optional, data loading logic is developed per project and does not necessarily have to use this data_bucket)
-> - prefix_data: the prefix (or 'folder') in which the data can be found (optional, data loading logic is developed per project and does not necessarily have to use this data_bucket)
+> - **data_bucket**: the name of the S3 bucket in which the data resides (optional, data loading logic is developed per project and does not necessarily have to use this data_bucket)
+> - **prefix_data**: the prefix (or 'folder') in which the data can be found (optional, data loading logic is developed per project and does not necessarily have to use this data_bucket)
 
 **NOTE**: S3 bucket names must be globally unique, so make sure to not pick names that are too general
 
