@@ -228,4 +228,10 @@ Furthermore, additional Lambda's and/or logic can be set up to alert developers 
 
 ## Tutorial
 
-To help you get started with using grater_expectations, a tutorial is available for you to walk through. You can initialize this tutorial on your local machine by calling `python initialize_project.py -p tutorial` from your terminal at the root of this repository. The tutorial will then automatically be generated, after which a tutorial notebook will be opened for you.
+To help you get started with using grater_expectations, a tutorial is available for you to walk through. To run it, first go to the `testing_config.yml` and enter names for the following parameters (these need to be globally unique, so be creative!):
+
+> 1. store_bucket
+> 2. site_bucket
+> 3. data_bucket
+
+You can use the default values for the other parameters. After doing so, you can initialize the tutorial on your local machine by calling `python initialize_project.py -p tutorial` from your terminal at the root of this repository. The tutorial will then automatically be generated, after which a tutorial notebook will be opened for you.

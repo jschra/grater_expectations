@@ -492,6 +492,9 @@ def adjust_for_tutorial(args):
         dest = f"{args.project}/expectation_suite.ipynb"
         shutil.copy2(orig, dest)
 
+        # -- 4. Replace lambda function
+        #TODO
+
 
 def start_testing_suite_notebook(args):
     logger.info(f"Opening testing suite notebook for {args.project}")
