@@ -23,7 +23,7 @@ def lambda_handler(event, context):
        event passed at runtime for object_prefix
     1. Initialize S3 bucket object and GE DataContext object
     2. Load data from S3 using the object_prefix passed in the event, parse the prefix
-       for an asset name (name of the dataset) and batch_identifier (date of the 
+       for an asset name (name of the dataset) and batch_identifier (date of the
        dataset, retrieved from the file name)
     3. Generate a RuntimeBatchRequest to run against the checkpoint generated in
        expectation_suite.ipynb
@@ -54,12 +54,10 @@ def lambda_handler(event, context):
     #       name and a batch identifier that can be used in the RuntimeBatchRequest
     #       to identify the current batch being run
     df_batch = load_data(bucket, prefix)
-    asset_name = prefix.split("/")[
-        -1
-    ]  # extracts only then full name of the data file being loaded
-    batch_identifier = re.search(r"\d{4}\-\d{2}", asset_name)[
-        0
-    ]  # extracts just the date of the data file loaded
+    # Extract asset name by getting file name of data (end of prefix)
+    asset_name = prefix.split("/")[-1]
+    # Extract batch_identifier by pulling date from filename (year_month)
+    batch_identifier = re.search(r"\d{4}\-\d{2}", asset_name)[0]
 
     # -- 3. Generate batch request to run validations using a checkpoint
     batch_request = RuntimeBatchRequest(

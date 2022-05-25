@@ -86,23 +86,23 @@ When you want to develop a new set of tests for a specific dataset, you first ne
 
 Nested under the project name (e.g. tutorial), the configuration file is expected to contain the following keys:
 
-> - **store_bucket**: the name of the S3 bucket that can be used to store Great Expectations outputs
-> - **store_bucket_prefix**: the prefix (or 'folder') in which the outputs should be stored
-> - **site_bucket**: the name of the S3 bucket that can be used for rendering Data Docs (static GE website)
-> - **site_bucket_prefix**: the prefix (or 'folder') in which the files for the site should be stored
-> - **site_name**: the name that should be given to the rendered website
-> - **docker_image_name**: the name that will be used for the docker image and ECR repository
+- **store_bucket**: the name of the S3 bucket that can be used to store Great Expectations outputs
+- **store_bucket_prefix**: the prefix (or 'folder') in which the outputs should be stored
+- **site_bucket**: the name of the S3 bucket that can be used for rendering Data Docs (static GE website)
+- **site_bucket_prefix**: the prefix (or 'folder') in which the files for the site should be stored
+- **site_name**: the name that should be given to the rendered website
+- **docker_image_name**: the name that will be used for the docker image and ECR repository
   to store the image
-> - **expectations_suite_name**: the name for the expectation suite you will generate (
+- **expectations_suite_name**: the name for the expectation suite you will generate (
   an expectations suite is GE jargon for a bundle of expectations you will use to validate
   a dataset)
-> - **checkpoint_name**: name for the checkpoint that will be used to validate your dataset
+- **checkpoint_name**: name for the checkpoint that will be used to validate your dataset
   at runtime. Checkpoints are used to bundle expectation suites with data to
   validate at runtime
-> - **run_name_template**: the template to be used to tag validation runs with. If given
+- **run_name_template**: the template to be used to tag validation runs with. If given
   date string formats, these will be rendered at runtime using the date at runtime
-> - **data_bucket**: the name of the S3 bucket in which the data resides (optional, data loading logic is developed per project and does not necessarily have to use this data_bucket)
-> - **prefix_data**: the prefix (or 'folder') in which the data can be found (optional, data loading logic is developed per project and does not necessarily have to use this data_bucket)
+- **data_bucket**: the name of the S3 bucket in which the data resides (optional, data loading logic is developed per project and does not necessarily have to use this data_bucket)
+- **prefix_data**: the prefix (or 'folder') in which the data can be found (optional, data loading logic is developed per project and does not necessarily have to use this data_bucket)
 
 **NOTE**: S3 bucket names must be globally unique, so make sure to not pick names that are too general
 
@@ -152,9 +152,9 @@ After generating a testing suite, a checkpoint to run and a Data Docs website us
 
 When `initialize_project.py` is run, an initial setup for this can be found in `lambda_function.py`. To make this Lambda function work, there are a few things that need to be specified by the developer:
 
-> 1. **Logic for loading data**: at runtime, the Lambda needs to be able to load a batch of data to memory (as pandas DataFrame) in order to run validations. Hence, it requires logic to do so. If you've previously created such logic for the `expectation_suite.ipynb` and stored that in `supporting_functions.py`, you should import it into the Lambda function and re-use it.
-> 2. **Event information for loading data**: in order for the Lambda function to figure out what to load, the Lambda has been set up to expect such information in the event parameter passed at runtime. E.g. if you expect the Lambda to load and validate a specific csv dataset each month, you could trigger it by sending the prefix of the dataset on S3. If the Lambda knows which bucket the data resides in, this information alone is enough for it to load it.
-> 3. **Logic for dynamic evaluation parameters**: if your expectation suite uses dynamic evaluation parameters, these need to be provided at runtime of the Lambda
+1. **Logic for loading data**: at runtime, the Lambda needs to be able to load a batch of data to memory (as pandas DataFrame) in order to run validations. Hence, it requires logic to do so. If you've previously created such logic for the `expectation_suite.ipynb` and stored that in `supporting_functions.py`, you should import it into the Lambda function and re-use it.
+2. **Event information for loading data**: in order for the Lambda function to figure out what to load, the Lambda has been set up to expect such information in the event parameter passed at runtime. E.g. if you expect the Lambda to load and validate a specific csv dataset each month, you could trigger it by sending the prefix of the dataset on S3. If the Lambda knows which bucket the data resides in, this information alone is enough for it to load it.
+3. **Logic for dynamic evaluation parameters**: if your expectation suite uses dynamic evaluation parameters, these need to be provided at runtime of the Lambda
 
 If the Lambda is properly configured, it can now be used to run validations against new data. Depending on the checkpoint used (SimpleCheckpoint or the custom checkpoint_without_datadocs_update), the Data Docs website will automatically be updated with the results of these validations.
 
@@ -166,12 +166,12 @@ If the Lambda is properly configured, it can now be used to run validations agai
 Because there are size constraints when it comes to using Python packages on AWS Lambda (max 250MB of loaded packages through layers), the decision was made to use Docker images instead (for which the size constraint is 10GB).
 
 Although this decision increases the complexity of the deployment a bit, `initialize_project.py` already provides you with all the boilerplate code you need to create a Docker image and load it to ECR. Said logic can be found in:
-> - Dockerfile: this file contains the required steps to build a new Docker image to deploy on AWS
-> - build_image_store_on_ecr.sh: bash script containing all steps to create a new Docker image using the Dockerfile and load it to ECR, provided you have the Docker Engine and AWS CLI installed and your user credentials (AWS) can be accessed
+- Dockerfile: this file contains the required steps to build a new Docker image to deploy on AWS
+- build_image_store_on_ecr.sh: bash script containing all steps to create a new Docker image using the Dockerfile and load it to ECR, provided you have the Docker Engine and AWS CLI installed and your user credentials (AWS) can be accessed
 
 Before deploying, however, make sure that:
-> - The code in `lambda_function.py` can load and validate data, as this forms the main script of the Docker image
-> - All functions that the Lambda function needs are accessible either through (1) imports from `supporting_functions.py` or (2) direct function definitions in `lambda_function.py`
+- The code in `lambda_function.py` can load and validate data, as this forms the main script of the Docker image
+- All functions that the Lambda function needs are accessible either through (1) imports from `supporting_functions.py` or (2) direct function definitions in `lambda_function.py`
 
 After doing so, build_image_store_on_ecr.sh can be run from the project directory. This script will build a new Docker image for Python 3.8, install all dependencies within it using requirements.txt and copy required code- and configuration files onto the image (`supporting_function.py`, `lambda_function.py`, `project_config.yml` and `great_expectations/great_expectations.yml`). Next, it will create a new repo on AWS ECR (if needed) and upload the Docker image to it. The output in the terminal should look as follows:
 

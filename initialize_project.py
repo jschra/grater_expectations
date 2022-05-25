@@ -77,19 +77,20 @@ def main_program():
     # -- 5. Copy configuration
     generate_project_config(cfg, args, cfg_global)
 
-    # -- 6. Generate GE config
+    # -- 6. Generate Great Expectations config yml
     generate_ge_config(cfg, args)
 
     # -- 7. Generate bash script for building Docker image and push to ECR
     generate_ecr_bash_script(cfg, args, cfg_global)
 
-    # -- 8. Generate terraform vars file
+    # -- 8. Generate Terraform var files
     generate_terraform_var_files(cfg, args, cfg_global)
 
     # -- 9. Add provider.tf in each Terraform directory
     generate_terraform_provider_config(args, cfg_global)
 
-    # -- 10. If tutorial, do additional things
+    # -- 10. If tutorial, overwrite files with tutorial equivalents and add
+    #       tutorial data
     adjust_for_tutorial(args)
 
     # -- 11. Start testing suite notebook
@@ -474,15 +475,16 @@ def copy_and_overwrite_tree(
 
 
 def adjust_for_tutorial(args):
-    logger.info("Making adjustments for tutorial")
+    """Helper function to move files into tutorial directory if tutorial is being run"""
+    logger.info("Making adjustments for running the tutorial")
     if args.project == "tutorial":
-        # -- .1 Add tutorial Terraform files
+        # -- 1. Add tutorial Terraform files
         orig = "bootstrap_files/tutorial_files/terraform/tutorial_bucket/"
         dest = f"{args.project}/terraform/buckets/"
         for tutorial_file in os.listdir(orig):
             shutil.copy2(orig + tutorial_file, dest + tutorial_file)
 
-        # -- .2 Add tutorial data
+        # -- 2. Add tutorial data
         orig = "bootstrap_files/tutorial_files/tutorial_data"
         dest = f"{args.project}/data"
         copy_and_overwrite_tree(orig, dest)
@@ -493,10 +495,14 @@ def adjust_for_tutorial(args):
         shutil.copy2(orig, dest)
 
         # -- 4. Replace lambda function
-        #TODO
+        orig = "bootstrap_files/tutorial_files/lambda_function.ipynb"
+        dest = f"{args.project}/lambda_function.ipynb"
+        shutil.copy2(orig, dest)
 
 
 def start_testing_suite_notebook(args):
+    """Helper function to open up the expectation_suite.ipynb notebook upon 
+    initialization of a new project"""
     logger.info(f"Opening testing suite notebook for {args.project}")
     path = f"./{args.project}"
     os.system(f"nbopen {path}/expectation_suite.ipynb")
