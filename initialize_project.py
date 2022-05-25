@@ -479,8 +479,15 @@ def adjust_for_tutorial(args):
     logger.info("Making adjustments for running the tutorial")
     if args.project == "tutorial":
         # -- 1. Add tutorial Terraform files
+        # -- .1 Buckets
         orig = "bootstrap_files/tutorial_files/terraform/tutorial_bucket/"
         dest = f"{args.project}/terraform/buckets/"
+        for tutorial_file in os.listdir(orig):
+            shutil.copy2(orig + tutorial_file, dest + tutorial_file)
+
+        # -- .2 Lambda
+        orig = "bootstrap_files/tutorial_files/terraform/tutorial_lambda/"
+        dest = f"{args.project}/terraform/lambda/"
         for tutorial_file in os.listdir(orig):
             shutil.copy2(orig + tutorial_file, dest + tutorial_file)
 
@@ -489,10 +496,11 @@ def adjust_for_tutorial(args):
         dest = f"{args.project}/data"
         copy_and_overwrite_tree(orig, dest)
 
-        # -- 3. Replace expectation_suite with tutorial notebook
-        orig = "bootstrap_files/tutorial_files/expectation_suite.ipynb"
-        dest = f"{args.project}/expectation_suite.ipynb"
+        # -- 3. Copy tutorial notebook and remove expectation_suite.ipynb
+        orig = "bootstrap_files/tutorial_files/tutorial_notebook.ipynb"
+        dest = f"{args.project}/tutorial_notebook.ipynb"
         shutil.copy2(orig, dest)
+        os.remove(f"{args.project}/expectation_suite.ipynb")
 
         # -- 4. Replace lambda function
         orig = "bootstrap_files/tutorial_files/lambda_function.py"
