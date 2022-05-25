@@ -219,9 +219,9 @@ Terraform will then present you with a plan for deploying the Lambda, which it w
 ## Using the Lambda
 
 After having deployed the Lambda function, it is now ready for use! There are many ways one can go about this, such as:
-> * Incorporating the Lambda in a Step Function
-> * Setting up a monthly trigger to send the prefix(es) of new data as an event to the Lambda
-> * Programmatically triggering the Lambda 
+* Incorporating the Lambda in a Step Function
+* Setting up a monthly trigger to send the prefix(es) of new data as an event to the Lambda
+* Programmatically triggering the Lambda 
 
 Furthermore, additional Lambda's and/or logic can be set up to alert developers when validations fail (e.g. through Slack which is a built-in function of Great Expectations, or through using AWS SES to send e-mails). There are many things you can
 
@@ -232,9 +232,9 @@ Furthermore, additional Lambda's and/or logic can be set up to alert developers 
 
 A tutorial is available to help you get started with using Grater Expectations. To run it, make sure that your [system is set up](#setting-up-your-system) for running all components. Next, [generate a virtual environment](#getting-started) to run the project in. Next, open the `testing_config.yml` configuration file and enter names for the following parameters (these need to be globally unique, so be creative!):
 
-> 1. store_bucket
-> 2. site_bucket
-> 3. data_bucket
+1. store_bucket
+2. site_bucket
+3. data_bucket
 
 Example values for these can be found under the [Creating a new project](#creating-a-new-project) section. You can use the default values for the other parameters. 
 
