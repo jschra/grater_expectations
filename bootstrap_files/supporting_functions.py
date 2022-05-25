@@ -246,8 +246,13 @@ expectation_suite_ge_cloud_id:"""
 
 # Helper functions for Jupyter
 def make_clickable(url):
-    """Helper function to create clickable HTML link"""
+    """Helper function to make HTML tags around a url"""
     return f'<a href="{url}">{url}</a>'
+
+
+def generate_link_in_notebook(url: str):
+    """Helper function to make a URL clickable in a Jupyter notebook"""
+    return display(HTML(make_clickable(url)))
 
 
 def generate_ge_site_link(build_data_docs_output: dict) -> str:
@@ -266,4 +271,4 @@ def generate_ge_site_link(build_data_docs_output: dict) -> str:
 def print_ge_site_link(build_data_docs_output: dict):
     """Helper function to output link to GE site in Jupyter notebook"""
     url = generate_ge_site_link(build_data_docs_output)
-    return display(HTML(make_clickable(url)))
+    return generate_link_in_notebook(url)
