@@ -495,13 +495,13 @@ def adjust_for_tutorial(args):
         shutil.copy2(orig, dest)
 
         # -- 4. Replace lambda function
-        orig = "bootstrap_files/tutorial_files/lambda_function.ipynb"
-        dest = f"{args.project}/lambda_function.ipynb"
+        orig = "bootstrap_files/tutorial_files/lambda_function.py"
+        dest = f"{args.project}/lambda_function.py"
         shutil.copy2(orig, dest)
 
 
 def start_testing_suite_notebook(args):
-    """Helper function to open up the expectation_suite.ipynb notebook upon 
+    """Helper function to open up the expectation_suite.ipynb notebook upon
     initialization of a new project"""
     logger.info(f"Opening testing suite notebook for {args.project}")
     path = f"./{args.project}"
