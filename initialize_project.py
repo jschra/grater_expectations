@@ -94,7 +94,10 @@ def main_program():
     adjust_for_tutorial(args)
 
     # -- 11. Start testing suite notebook
-    # start_testing_suite_notebook(args)
+    if args.project == "tutorial":
+        start_notebook(args, "tutorial_notebook")
+    else:
+        start_notebook(args)
 
 
 # Functions
@@ -121,7 +124,7 @@ def evaluate_config_keys(cfg: dict, list_keys: list, config_name: str):
     missing_keys = [key for key in list_keys if key not in cfg.keys()]
     if len(missing_keys) > 0:
         logger.warning(
-            f"Not all keys found in {config_name} config. Missing: {missing_keys}"
+            f"Not all keys found in the {config_name} config. Missing: {missing_keys}"
         )
         raise KeyError(
             f"The {config_name} configuration is missing the "
@@ -134,7 +137,8 @@ def evaluate_config_keys(cfg: dict, list_keys: list, config_name: str):
     ]
     if len(missing_values) > 0:
         logger.warning(
-            f"Not all keys found in {config_name} have values. Missing: {missing_values}"
+            f"Not all keys found in the {config_name} config have values. Missing: "
+            f"{missing_values}"
         )
         raise KeyError(
             f"The {config_name} configuration is missing values for the "
@@ -508,12 +512,12 @@ def adjust_for_tutorial(args):
         shutil.copy2(orig, dest)
 
 
-def start_testing_suite_notebook(args):
+def start_notebook(args, notebook_name: str = "expectation_suite"):
     """Helper function to open up the expectation_suite.ipynb notebook upon
     initialization of a new project"""
-    logger.info(f"Opening testing suite notebook for {args.project}")
+    logger.info(f"Opening {notebook_name} notebook for project {args.project}")
     path = f"./{args.project}"
-    os.system(f"nbopen {path}/expectation_suite.ipynb")
+    os.system(f"nbopen {path}/{notebook_name}.ipynb")
 
 
 if __name__ == "__main__":
