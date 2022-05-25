@@ -6,6 +6,8 @@ Welcome to Grater Expectations! In this repository, you will find code, notebook
 
 To this end, a combination of Python, Docker, Terraform and AWS services are used to enable you to quickly bootstrap a new project for testing your data. This README will explain you exactly how that works and how you can get started.
 
+A tutorial is also available to walk you through Grater Expectations. Please refer to the [Tutorial](#tutorial) for more information.
+
 ## Table of contents
 * [Project decisions](#project-decisions)
 * [General setup](#general-setup)
@@ -49,12 +51,12 @@ The general setup of all components of this repository is as follows:
 ## Setting up your system
 To run all components of this repository, you will need the following:
 
--  AWS account with [programmatic access keys](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html)
-- [Docker Engine](https://docs.docker.com/engine/): to create new images to run on AWS Lambda and push them to ECR
-- [AWS CLI](https://aws.amazon.com/cli/): to login to AWS, create an ECR repository and push docker images to ECR
-- Python 3.8: It is recommended to use conda ([Miniconda](https://docs.conda.io/en/latest/miniconda.html)) for easy environment creation and management
-- IDE (e.g. VS Code, optional): for easier development (not necessarily for notebooks, but definitely for Python files)
-- [Terraform](https://www.terraform.io/) (optional): to spin up S3 buckets for GE artifacts and the Data Docs website and a Lambda function for testing
+-  **AWS account**: to deploy services through using [programmatic access keys](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html)
+- [**Docker Engine**](https://docs.docker.com/engine/): to create new images to run on AWS Lambda and push them to ECR
+- [**AWS CLI**](https://aws.amazon.com/cli/): to login to AWS, create an ECR repository and push docker images to ECR
+- **Python 3.8**: It is recommended to use conda ([Miniconda](https://docs.conda.io/en/latest/miniconda.html)) for easy environment creation and management
+- **IDE** (e.g. VS Code, optional): for easier development (not necessarily for notebooks, but definitely for Python files)
+- [**Terraform**](https://www.terraform.io/) (optional): to spin up S3 buckets for GE artifacts and the Data Docs website and a Lambda function for testing
 
 Throughout the rest of the documentation, it is assumed you have these tools and services installed on your local machine
 
@@ -228,12 +230,12 @@ Furthermore, additional Lambda's and/or logic can be set up to alert developers 
 
 ## Tutorial
 
-To help you get started with using grater_expectations, a tutorial is available for you to walk through. To run it, first go to the `testing_config.yml` and enter names for the following parameters (these need to be globally unique, so be creative!):
+A tutorial is available to help you get started with using Grater Expectations. To run it, make sure that your [system is set up](#setting-up-your-system) for running all components. Next, [generate a virtual environment](#getting-started) to run the project in. Next, open the `testing_config.yml` configuration file and enter names for the following parameters (these need to be globally unique, so be creative!):
 
 > 1. store_bucket
 > 2. site_bucket
 > 3. data_bucket
 
-Example values for these can be found under the [Creating a new project](#creating-a-new-project) section.
+Example values for these can be found under the [Creating a new project](#creating-a-new-project) section. You can use the default values for the other parameters. 
 
-You can use the default values for the other parameters. After doing so, you can initialize the tutorial on your local machine by calling `python initialize_project.py -p tutorial` from your terminal at the root of this repository. The tutorial will then automatically be generated, after which a tutorial notebook will be opened for you.
+After doing so, you can initialize the tutorial on your local machine by calling `python initialize_project.py -p tutorial` from your terminal at the root of this repository. The tutorial will then automatically be generated, after which a tutorial notebook will be opened for you.
