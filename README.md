@@ -261,7 +261,7 @@ export AWS_SECRET_ACCESS_KEY=<enter_aws_secret_access_key_here>
 
 <br>
 
-Next, open the `testing_config.yml` configuration file and enter names for the following parameters:
+Next, open the `testing_config.yml` configuration file (found at the root of this repository) and enter names for the following parameters:
 
 **Global parameters**
 1. account_id
