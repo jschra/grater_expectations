@@ -244,7 +244,7 @@ Furthermore, additional Lambda's and/or logic can be set up to alert developers 
 
 ## Tutorial
 
-A tutorial is available to help you get started with using Grater Expectations. To run it, make sure that your [system is set up](#setting-up-your-system) for running all components. Next, [generate a virtual environment](#getting-started) to run the project in. Then open the `testing_config.yml` configuration file and enter names for the following parameters (identified by MUST_BE_SET):
+A tutorial is available to help you get started with using Grater Expectations. To run it, make sure that your [system is set up](#setting-up-your-system) for running all components. Next, [generate a virtual environment](#getting-started) to run the project in. Then open the `testing_config.yml` configuration file and enter names for the following parameters:
 
 **Global parameters**
 1. account_id
