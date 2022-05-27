@@ -6,7 +6,7 @@ Welcome to Grater Expectations! In this repository, you will find code, notebook
 
 To this end, a combination of Python, Docker, Terraform and AWS services are used to enable you to quickly bootstrap a new project for testing your data. This README will explain you exactly how that works and how you can get started.
 
-A tutorial is also available to walk you through Grater Expectations. Please refer to the [Tutorial](#tutorial) for more information.
+A tutorial is also available to walk you through Grater Expectations. Please refer to the [Tutorial](#tutorial) section for more information.
 
 ## Table of contents
 * [Project decisions](#project-decisions)
@@ -230,8 +230,13 @@ Furthermore, additional Lambda's and/or logic can be set up to alert developers 
 
 ## Tutorial
 
-A tutorial is available to help you get started with using Grater Expectations. To run it, make sure that your [system is set up](#setting-up-your-system) for running all components. Next, [generate a virtual environment](#getting-started) to run the project in. Then open the `testing_config.yml` configuration file and enter names for the following parameters (these need to be globally unique, so be creative!):
+A tutorial is available to help you get started with using Grater Expectations. To run it, make sure that your [system is set up](#setting-up-your-system) for running all components. Next, [generate a virtual environment](#getting-started) to run the project in. Then open the `testing_config.yml` configuration file and enter names for the following parameters (identified by MUST_BE_SET):
 
+**Global parameters**
+1. account_id
+2. region
+
+**Project parameters under tutorial** (these need to be globally unique, so be creative!):
 1. store_bucket
 2. site_bucket
 3. data_bucket
