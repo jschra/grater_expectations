@@ -86,6 +86,18 @@ When you want to develop a new set of tests for a specific dataset, you first ne
 
 Nested under the project name (e.g. tutorial), the configuration file is expected to contain the following keys:
 
+**Global parameters**
+- **account_id**: id of the AWS account that can be used to provision services
+- **region**: the region wherein the services should be delopyed (if applicable)
+
+Below you can find an example of a filled in global configuration.
+
+![Example global configuration](./docs/images/example_global_config.png)
+
+<br>
+
+**Project parameters**:
+
 - **store_bucket**: the name of the S3 bucket that can be used to store Great Expectations outputs
 - **store_bucket_prefix**: the prefix (or 'folder') in which the outputs should be stored
 - **site_bucket**: the name of the S3 bucket that can be used for rendering Data Docs (static GE website)
@@ -106,9 +118,11 @@ Nested under the project name (e.g. tutorial), the configuration file is expecte
 
 **NOTE**: S3 bucket names must be globally unique, so make sure to not pick names that are too general
 
-Below you can find an example of a filled in configuration:
+Below you can find an example of a filled in project configuration:
 
-![Example configuration](./docs/images/example_config.png)
+![Example project configuration](./docs/images/example_project_config.png)
+
+<br>
 
 In the testing_config.yml file there are also two global configurations, namely **account_id** and **region**. Although it is unlikely that the account_id will differ for a new project, if the region does, make sure to adjust this in the project configuration file after initialization (project_config.yml, see below).
 
