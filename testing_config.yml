@@ -30,14 +30,14 @@
 # NOTE: for names of S3 buckets, only use hyphens ('-') and make sure they are globally unique
 
 global:
-  account_id: "541219063706"
-  region: "eu-west-1"
+  account_id: "MUST_BE_SET"
+  region: "MUST_BE_SET"
 
 tutorial:
   # -- AWS configurations
-  store_bucket: ""
+  store_bucket: "MUST_BE_SET"
   store_bucket_prefix: "expectations"
-  site_bucket: ""
+  site_bucket: "MUST_BE_SET"
   site_bucket_prefix: ""
   docker_image_name: tutorial_image
 
@@ -48,5 +48,5 @@ tutorial:
   run_name_template: Tutorial run %d-%m-%Y
 
   # -- Data input parameters
-  data_bucket: ""
+  data_bucket: "MUST_BE_SET"
   prefix_data: "data/"

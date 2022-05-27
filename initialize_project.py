@@ -132,13 +132,12 @@ def evaluate_config_keys(cfg: dict, list_keys: list, config_name: str):
         )
 
     # -- 2. Check for missing values
-    missing_values = [
-        key for key, value in cfg.items() if not value if key != "site_bucket_prefix"
-    ]
+    DEFAULT = "MUST_BE_SET"
+    missing_values = [key for key, value in cfg.items() if value == DEFAULT]
     if len(missing_values) > 0:
         logger.warning(
-            f"Not all keys found in the {config_name} config have values. Missing: "
-            f"{missing_values}"
+            f"Not all keys found in the {config_name} config have been configured. "
+            f"Not configured: {missing_values}"
         )
         raise KeyError(
             f"The {config_name} configuration is missing values for the "
