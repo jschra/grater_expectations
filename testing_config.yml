@@ -48,5 +48,5 @@ tutorial:
   run_name_template: Tutorial run %d-%m-%Y
 
   # -- Data input parameters
-  data_bucket: "MUST_BE_SET"
+  data_bucket: ""
   prefix_data: "data/"
