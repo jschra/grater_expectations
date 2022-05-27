@@ -51,9 +51,9 @@ The general setup of all components of this repository is as follows:
 ## Setting up your system
 To run all components of this repository, you will need the following:
 
--  **AWS account**: to deploy services through using [programmatic access keys](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html)
+-  **AWS account**: to deploy services through using [programmatic access keys](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html). You can generate access keys by logging into the console, browsing to *Security Credentials* under your account (upper right corner in console) and then creating new access keys under the *Access keys section*
 - [**Docker Engine**](https://docs.docker.com/engine/): to create new images to run on AWS Lambda and push them to ECR
-- [**AWS CLI**](https://aws.amazon.com/cli/): to login to AWS, create an ECR repository and push docker images to ECR
+- [**AWS CLI**](https://aws.amazon.com/cli/): to login to AWS, create an ECR repository and push docker images to ECR. You can also install the AWS CLI easily using a package manager such as [brew](https://formulae.brew.sh/formula/awscli) or [chocolatey](https://community.chocolatey.org/packages/awscli)
 - **Python 3.8**: It is recommended to use conda ([Miniconda](https://docs.conda.io/en/latest/miniconda.html)) for easy environment creation and management
 - **IDE** (e.g. VS Code, optional): for easier development (not necessarily for notebooks, but definitely for Python files)
 - [**Terraform**](https://www.terraform.io/) (optional): to spin up S3 buckets for GE artifacts and the Data Docs website and a Lambda function for testing
@@ -244,7 +244,24 @@ Furthermore, additional Lambda's and/or logic can be set up to alert developers 
 
 ## Tutorial
 
-A tutorial is available to help you get started with using Grater Expectations. To run it, make sure that your [system is set up](#setting-up-your-system) for running all components. Next, [generate a virtual environment](#getting-started) to run the project in. Then open the `testing_config.yml` configuration file and enter names for the following parameters:
+A tutorial is available to help you get started with using Grater Expectations. To run it, make sure that your [system is set up](#setting-up-your-system) for running all components. Next, [generate a virtual environment](#getting-started) to run the project in and ensure that it is used in your current terminal (e.g. by running `conda activate <environment-name>`).
+
+After activating your virtual environment, it is then best to set your AWS access credentials as environment variables in your current session, so these can also be access by programs started up from this terminal. In (Git) bash, you can do so with the following command:
+
+<br>
+
+```bash
+# -- Activate GE virtual environment
+conda activate grater_expectations
+
+# -- Set credentials for AWS
+export AWS_ACCESS_KEY_ID=<enter_aws_access_key_here>
+export AWS_SECRET_ACCESS_KEY=<enter_aws_secret_access_key_here>
+```
+
+<br>
+
+Next, open the `testing_config.yml` configuration file and enter names for the following parameters:
 
 **Global parameters**
 1. account_id
@@ -257,4 +274,4 @@ A tutorial is available to help you get started with using Grater Expectations. 
 
 Example values for these can be found under the [Creating a new project](#creating-a-new-project) section. You can use the default values for the other parameters. 
 
-After doing so, you can initialize the tutorial on your local machine by calling `python initialize_project.py -p tutorial` from your terminal at the root of this repository. The tutorial will then automatically be generated, after which a tutorial notebook will be opened for you.
+After doing so, you can initialize the tutorial on your local machine by calling `python initialize_project.py -p tutorial` at the root of this repository. The files for the tutorial will then automatically be generated, after which a tutorial notebook will be opened for you.
