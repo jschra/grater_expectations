@@ -20,7 +20,12 @@ def main_program():
     logger.info("Parsing command line arguments")
     parser = ArgumentParser()
     parser.add_argument("-p", "--project", type=str, required=True)
+    parser.add_argument(
+        "-nv", "--nonverbose", nargs="?", const=True, type=bool, default=False
+    )
     args = parser.parse_args()
+    if args.nonverbose:
+        args.nonverbose = True
 
     # -- 2. Load and check configurations
     logger.info("Loading configurations from testing_config.yml")
@@ -66,13 +71,7 @@ def main_program():
 
     # -- 4. Copy bootstrap files (do this before copying any other files, as it might
     # overwrite and remove previously copied files)
-    copy_and_overwrite_tree(
-        from_path="bootstrap_files",
-        to_path="/".join([".", args.project]),
-        ignore_pattern=shutil.ignore_patterns(
-            "__init__*", "non_verbose_files", "tutorial_files"
-        ),
-    )
+    generate_project_files(args)
 
     # -- 5. Copy configuration
     generate_project_config(cfg, args, cfg_global)
@@ -205,6 +204,38 @@ def check_if_project_exists(args):
             logger.info(f"Overwriting existing project: {args.project}")
         else:
             raise SystemExit("Project already exists, stopping initialization")
+
+
+def generate_project_files(args):
+    """Function to copy files from bootstrap files directory to project directory,
+    potentially using non verbose files if passed as argument through command
+    line
+
+    Parameters
+    ----------
+    args:
+        Command line arguments passed at runtime. Expected to contain --project/-p,
+        can also contain --nonverbose/-nv
+    """
+    # -- 1. Copy files from bootstrap files
+    from_path = "bootstrap_files"
+    to_path = "/".join([".", args.project])
+
+    copy_and_overwrite_tree(
+        from_path=from_path,
+        to_path=to_path,
+        ignore_pattern=shutil.ignore_patterns(
+            "__init__*", "non_verbose_files", "tutorial_files"
+        ),
+    )
+
+    # -- 2. If nonverbose, get nonverbose files
+    if args.nonverbose:
+        path = "bootstrap_files/non_verbose_files"
+        for nv_file in os.listdir(path):
+            orig = path + "/" + nv_file
+            dest = to_path + "/" + nv_file
+            shutil.copy2(orig, dest)
 
 
 def generate_project_config(cfg: dict, args, cfg_global: dict = None):
