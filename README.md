@@ -146,6 +146,8 @@ conda activate grater_expectations
 python initialize_project.py --project tutorial
 ```
 
+By default, projects are initialized with files containing a lot of documentation and comments. If you would prefer to use non verbose files, use the -nv or --nonverbose argument when initializing a project, e.g. `python initialize_project.py --project tutorial -nv`
+
 When the initialization runs correctly, a new project directory with related files will be set up for you and a Python notebook will be opened to start writing your first
 expectation suite. The newly created directory* will look like this:
 
