@@ -10,7 +10,8 @@ A tutorial is also available to walk you through Grater Expectations. Please ref
 
 ## Table of contents
 * [Project decisions](#project-decisions)
-* [General setup](#general-setup)
+* [Project setup](#project-setup)
+* [High-level workflow](#high-level-workflow)
 * [Setting up your system](#setting-up-your-system)
 * [Getting started](#getting-started)
 * [Creating a new project](#creating-a-new-project)
@@ -39,11 +40,20 @@ Windows and Mac OS
 <br>
 <hr>
 
-## General setup
+## Project setup
 
 The general setup of all components of this repository is as follows:
 
 ![General setup](./docs/images/general_setup.png)
+
+<br>
+<hr>
+
+## High-level workflow
+
+The (simplified) workflow of using Grater Expectations to develop and implement data testing logic is as follows:
+
+![Workflow](./docs/images/high_level_workflow.png)
 
 <br>
 <hr>
