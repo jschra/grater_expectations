@@ -14,6 +14,28 @@ logger = setup_logging()
 
 
 def lambda_handler(event, context):
+    """Lambda function for using Grater Expectations. This function runs through
+    the following steps:
+
+    0. Load project parameters for the tutorial from project_config.yml and parse the
+       event passed at runtime
+    1. Initialize S3 client object, S3 bucket object and GE DataContext object
+    2. Load data (LOGIC TO BE WRITTEN BY DEVELOPER)
+    3. Generate a RuntimeBatchRequest to run against the checkpoint generated in
+       expectation_suite.ipynb
+    4. Run expectations against current batch of data by calling the checkpoint with
+       the RuntimeBatchRequest from step 3
+    5. Evaluate expectation results and return status code 200 if successfull
+
+    Parameters
+    ----------
+    event : dict
+        Event passed to the Lambda at runtime
+    context
+        An object with methods and properties that provide information about the 
+        invocation, function and execution environment. Does not need to be passed
+        upon invocation
+    """
     # -- 0. Load parameters from configuration file and event
     test_config = TestingConfiguration("project_config.yml")
     test_config.load_config()
