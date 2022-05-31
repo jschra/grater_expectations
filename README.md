@@ -56,6 +56,14 @@ The (simplified) workflow of using Grater Expectations to develop and implement 
 ![Workflow](./docs/images/high_level_workflow.png)
 
 <br>
+
+The overall idea is to **configure** data testing by using Great Expectations, so that a preset selection of tests can be run over new data at **runtime**.
+
+In order to **configure** Great Expectations, an example dataset representative of future data to be tested is loaded. Using this dataset, multiple tests (*expectations*) are defined and bundled into a set of tests (*expectation suite*). In order to call this expectation suite at runtime, it is connected to a checkpoint. This checkpoint can then be called at runtime to test new data against, the logic of which is developed a Python script and built into a Docker image. This image is deployed as an AWS Lambda.
+
+At **runtime**, an event containing information on which new data to load and test can then be sent to the deployed Lambda to invoke it. The Lambda will then load and validate the new data, using the checkpoint and expectation suite previously developed. The results will then be published on a so-called Data Docs website, which end users can then inspect.
+
+<br>
 <hr>
 
 ## Setting up your system
