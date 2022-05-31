@@ -66,3 +66,6 @@ terraform/.terraform.lock.hcl
 
 # Zipped lambda code
 terraform/api.zip
+
+# Tutorial folder
+tutorial
