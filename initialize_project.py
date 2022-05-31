@@ -231,6 +231,7 @@ def generate_project_files(args):
 
     # -- 2. If nonverbose, get nonverbose files
     if args.nonverbose:
+        logger.info("Replacing generated files with non-verbose versions")
         path = "bootstrap_files/non_verbose_files"
         for nv_file in os.listdir(path):
             orig = path + "/" + nv_file

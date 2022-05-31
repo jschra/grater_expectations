@@ -1,4 +1,4 @@
-# This is the configuration file that can be used to bootstrap files for your Great
+# This is the configuration file that can be used to bootstrap files for your Grater
 # Expectations project.
 
 # For the overall project, there are global configurations which contain:
@@ -9,12 +9,14 @@
 
 # For each project, the following parameters can be found:
 # - store_bucket: the S3 bucket that can be used to store Great Expectations outputs
-# - store_bucket_prefix: the prefix (or 'folder') in which the outputs should be stored
+# - store_bucket_prefix: the prefix (or 'folder') in which the GE outputs should be stored.
+#   Defaults to root of the S3 bucket.
 # - site_bucket: the S3 bucket that can be used for rendering Data Docs (static GE website)
-# - site_bucket_prefix: the prefix (or 'folder') in which the files for the site should be stored
+# - site_bucket_prefix: the prefix (or 'folder') in which the files for the site should be stored.
+#   Defaults to root of the S3 bucket.
 # - site_name: the name that should be given to the rendered website
 # - docker_image_name: the name that will be used for the docker image and ECR repository
-#   to store the image
+#   to store the image on AWS
 # - expectations_suite_name: the name for the expectation suite you will generate (
 #   an expectations suite is GE yargon for a bundle of expectations you will use to validate
 #   a dataset)
@@ -24,8 +26,8 @@
 # - run_name_template: the template to be used to tag validation runs with. If given
 #   date string formats, these will be rendered at runtime using the date at runtime
 # - data_bucket: the S3 bucket in which the data resides
-# - prefix_example: prefix of an example tile that can be used to generate an expectation
-#   suite for
+# - prefix_data: prefix to data that can be used to load (example) dataset(s) to generate
+#   expectations and run validations
 
 # NOTE: for names of S3 buckets, only use hyphens ('-') and make sure they are globally unique
 
@@ -36,7 +38,7 @@ global:
 tutorial:
   # -- AWS configurations
   store_bucket: "MUST_BE_SET"
-  store_bucket_prefix: "expectations"
+  store_bucket_prefix: ""
   site_bucket: "MUST_BE_SET"
   site_bucket_prefix: ""
   docker_image_name: tutorial_image
