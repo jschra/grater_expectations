@@ -70,3 +70,7 @@ terraform/api.zip
 
 # Tutorial folder
 tutorial
+
+# Pip build
+build/
+grater_expectations.egg-info/
