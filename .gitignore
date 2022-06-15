@@ -53,6 +53,7 @@ __pycache__
 # Terraform files
 # Env files
 .env
+env/
 
 # Terraform state files
 *.tfstate
