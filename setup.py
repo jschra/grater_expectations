@@ -22,6 +22,7 @@ setup(
     install_requires=requirements,
     license=license,
     packages=['.'],
+    include_package_data=True,
     entry_points={
         'console_scripts': ['grater = initialize_project:main_program'],
     },
