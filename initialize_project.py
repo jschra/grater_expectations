@@ -5,6 +5,11 @@ import ruamel.yaml as yaml
 import uuid
 import logging
 
+
+PACKAGE_ROOT = os.path.dirname(__file__)
+PROJECT_ROOT = os.path.abspath('.')
+CONFIGS_FILE = 'testing_config.yml'
+
 # Logger
 logging.basicConfig(
     level=logging.DEBUG,
@@ -19,84 +24,97 @@ def main_program():
     # -- 1. Parse arguments passed at runtime from terminal
     logger.info("Parsing command line arguments")
     parser = ArgumentParser()
-    parser.add_argument("-p", "--project", type=str, required=True)
-    parser.add_argument(
-        "-nv", "--nonverbose", nargs="?", const=True, type=bool, default=False
-    )
+    subparsers = parser.add_subparsers()
+
+    create = subparsers.add_parser("create")
+    create_subparsers = create.add_subparsers(dest="create")
+
+    create_cnf = create_subparsers.add_parser("config")
+
+    create_prj = create_subparsers.add_parser("project")
+    create_prj.add_argument("-n", "--name", type=str, required=True)
+    create_prj.add_argument("-nv", "--nonverbose", action="store_true")
+
     args = parser.parse_args()
-    if args.nonverbose:
-        args.nonverbose = True
+    
+    if args.create == "config":
+        src = os.path.join(PACKAGE_ROOT, CONFIGS_FILE)
+        dst = os.path.join(PROJECT_ROOT, CONFIGS_FILE)
+        shutil.copy(src, dst)
 
     # -- 2. Load and check configurations
-    logger.info("Loading configurations from testing_config.yml")
-    with open("testing_config.yml") as cfg_yaml:
-        # -- Load
-        cfg_all = yaml.safe_load(cfg_yaml)
-        cfg_global = cfg_all["global"]
+    if args.create == "project":
 
-        try:
-            cfg = cfg_all[args.project]
-        except KeyError as ke:
-            logger.warning(
-                f"The project configurations for {args.project} were not found in the"
-                " testing_config.yml. Please add it."
-            )
-            raise ke
+        logger.info("Loading configurations from testing_config.yml")
 
-        # -- Check global config
-        global_keys = ["account_id", "region"]
-        evaluate_global_config(cfg_global, global_keys, "global")
+        with open(os.path.join(PROJECT_ROOT, CONFIGS_FILE)) as cfg_yaml:
+            # -- Load
+            cfg_all = yaml.safe_load(cfg_yaml)
+            cfg_global = cfg_all["global"]
 
-        # -- Check project config
-        project_keys = [
-            "store_bucket",
-            "store_bucket_prefix",
-            "site_bucket",
-            "site_bucket_prefix",
-            "docker_image_name",
-            "site_name",
-            "expectations_suite_name",
-            "checkpoint_name",
-            "run_name_template",
-            "data_bucket",
-            "prefix_data",
-        ]
-        evaluate_config_keys(cfg, project_keys, args.project)
+            try:
+                cfg = cfg_all[args.name]
+            except KeyError as ke:
+                logger.warning(
+                    f"The project configurations for {args.name} were not found in the"
+                    " testing_config.yml. Please add it."
+                )
+                raise ke
 
-    # -- 3. Check if the project exists and if so, if the user wants to continue. Then,
-    # Create directory if needed
-    _ = check_if_project_exists(args)
-    if args.project not in os.listdir():
-        os.mkdir(args.project)
+            # -- Check global config
+            global_keys = ["account_id", "region"]
+            evaluate_global_config(cfg_global, global_keys, "global")
 
-    # -- 4. Copy bootstrap files (do this before copying any other files, as it might
-    # overwrite and remove previously copied files)
-    generate_project_files(args)
+            # -- Check project config
+            project_keys = [
+                "store_bucket",
+                "store_bucket_prefix",
+                "site_bucket",
+                "site_bucket_prefix",
+                "docker_image_name",
+                "site_name",
+                "expectations_suite_name",
+                "checkpoint_name",
+                "run_name_template",
+                "data_bucket",
+                "prefix_data",
+            ]
+            evaluate_config_keys(cfg, project_keys, args.name)
 
-    # -- 5. Copy configuration
-    generate_project_config(cfg, args, cfg_global)
+        # -- 3. Check if the project exists and if so, if the user wants to continue. Then,
+        # Create directory if needed
+        _ = check_if_project_exists(args)
+        if args.name not in os.listdir():
+            os.mkdir(args.name)
 
-    # -- 6. Generate Great Expectations config yml
-    generate_ge_config(cfg, args)
+        # -- 4. Copy bootstrap files (do this before copying any other files, as it might
+        # overwrite and remove previously copied files)
+        generate_project_files(args)
 
-    # -- 7. Generate bash script for building Docker image and push to ECR
-    generate_ecr_bash_script(cfg, args, cfg_global)
+        # -- 5. Copy configuration
+        generate_project_config(cfg, args, cfg_global)
 
-    # -- 8. Generate Terraform var files
-    generate_terraform_var_files(cfg, args, cfg_global)
+        # -- 6. Generate Great Expectations config yml
+        generate_ge_config(cfg, args)
 
-    # -- 9. Add provider.tf in each Terraform directory
-    generate_terraform_provider_config(args, cfg_global)
+        # -- 7. Generate bash script for building Docker image and push to ECR
+        generate_ecr_bash_script(cfg, args, cfg_global)
 
-    # -- 10. If tutorial, overwrite files with tutorial equivalents and add
-    #       tutorial data
-    adjust_for_tutorial(args)
+        # -- 8. Generate Terraform var files
+        generate_terraform_var_files(cfg, args, cfg_global)
 
-    # -- 11. Start testing suite notebook
-    if args.project == "tutorial":
-        start_notebook(args, "tutorial_notebook")
-    else:
-        start_notebook(args)
+        # -- 9. Add provider.tf in each Terraform directory
+        generate_terraform_provider_config(args, cfg_global)
+
+        # -- 10. If tutorial, overwrite files with tutorial equivalents and add
+        #       tutorial data
+        adjust_for_tutorial(args)
+
+        # -- 11. Start testing suite notebook
+        if args.name == "tutorial":
+            start_notebook(args, "tutorial_notebook")
+        else:
+            start_notebook(args)
 
 
 # Functions
@@ -193,15 +211,15 @@ def evaluate_global_config(cfg: dict, list_keys: list, config_name: str):
 def check_if_project_exists(args):
     """Function to check if the project already exists and ensure that the user wants
     it to be overwritten, if that is the case"""
-    if args.project in os.listdir():
+    if args.name in os.listdir():
         logger.info(
-            f"The project you are trying to create, {args.project}, "
+            f"The project you are trying to create, {args.name}, "
             "already exists in this repository. Are you sure you want to initialize "
             "this project again and overwrite existing files (y/[n])? "
         )
         response = input("Input: ")
         if response in ["y", "Y", "yes", "Yes", "YES"]:
-            logger.info(f"Overwriting existing project: {args.project}")
+            logger.info(f"Overwriting existing project: {args.name}")
         else:
             raise SystemExit("Project already exists, stopping initialization")
 
@@ -218,8 +236,8 @@ def generate_project_files(args):
         can also contain --nonverbose/-nv
     """
     # -- 1. Copy files from bootstrap files
-    from_path = "bootstrap_files"
-    to_path = "/".join([".", args.project])
+    from_path = os.path.join(PACKAGE_ROOT, 'bootstrap_files')
+    to_path = os.path.join(PROJECT_ROOT, args.name)
 
     copy_and_overwrite_tree(
         from_path=from_path,
@@ -232,10 +250,10 @@ def generate_project_files(args):
     # -- 2. If nonverbose, get nonverbose files
     if args.nonverbose:
         logger.info("Replacing generated files with non-verbose versions")
-        path = "bootstrap_files/non_verbose_files"
+        path = os.path.join(PACKAGE_ROOT, "bootstrap_files", "non_verbose_files")
         for nv_file in os.listdir(path):
-            orig = path + "/" + nv_file
-            dest = to_path + "/" + nv_file
+            orig = os.path.join(path, nv_file)
+            dest = os.path.join(to_path, nv_file)
             shutil.copy2(orig, dest)
 
 
@@ -258,7 +276,7 @@ def generate_project_config(cfg: dict, args, cfg_global: dict = None):
 
     # -- Write file
     doc_out = yaml.dump(cfg, default_flow_style=False)
-    with open(f"./{args.project}/project_config.yml", "w") as project_yaml:
+    with open(os.path.join(PROJECT_ROOT, args.name, 'project_config.yml'), "w") as project_yaml:
         project_yaml.write(doc_out)
 
 
@@ -274,7 +292,7 @@ def generate_ge_config(cfg: dict, args):
         Command line arguments passed at runtime. Expected to contain --project/-p
     """
     logger.info("Generating Great Expectations configuration file")
-    path = f"./{args.project}/"
+    path = os.path.join(PROJECT_ROOT, args.name)
     base_yaml = f"""
   # config_version refers to the syntactic version of this config file, and is used in maintaining backwards compatibility
   # It is auto-generated and usually does not need to be changed.
@@ -351,11 +369,12 @@ def generate_ge_config(cfg: dict, args):
     enabled: true
     data_context_id: {str(uuid.uuid4())}
   """
+    print(os.listdir(path))
     if "great_expectations" not in os.listdir(path):
-        os.mkdir(path + "great_expectations")
+        os.mkdir(os.path.join(path, "great_expectations"))
 
     with open(
-        f"./{args.project}/great_expectations/great_expectations.yml", "w"
+        os.path.join(PROJECT_ROOT, args.name, 'great_expectations', 'great_expectations.yml'), "w"
     ) as out:
         out.write(base_yaml)
 
@@ -377,7 +396,7 @@ def generate_ecr_bash_script(cfg: dict, args, cfg_global: dict):
     logger.info(
         "Generating bash script for making docker image and uploading it to ECR"
     )
-    path = f"./{args.project}/"
+    path = os.path.join(PROJECT_ROOT, args.name)
     ECR_endpoint = (
         f'{cfg_global["account_id"]}.dkr.ecr.{cfg_global["region"]}.amazonaws.com'
     )
@@ -411,7 +430,7 @@ aws ecr create-repository --repository-name {docker_image} --image-scanning-conf
 docker tag {docker_image}:latest {ECR_endpoint}/{docker_image}:latest
 docker push {ECR_endpoint}/{docker_image}:latest"""
 
-    with open(f"{path}/build_image_store_on_ecr.sh", "w") as out:
+    with open(os.path.join(PROJECT_ROOT, args.name, 'build_image_store_on_ecr.sh'), 'w') as out: 
         out.write(document)
 
 
@@ -444,11 +463,10 @@ provider "aws" {{
 """
 
     # -- 2. Put in all Terraform directories
-    tf_dir = f"{args.project}/terraform/"
-    for dir in os.listdir(tf_dir):
-        abs_path = os.path.abspath(tf_dir + dir)
-        abs_path_file = abs_path + "/provider.tf"
-        with open(abs_path_file, "w") as out:
+    tf_dir = os.path.join(PROJECT_ROOT, args.name, 'terraform')
+    for path in os.listdir(tf_dir):
+        print(path)
+        with open(os.path.join(tf_dir, path, 'provider.tf'), "w+") as out:
             out.write(document)
 
 
@@ -466,11 +484,11 @@ def generate_terraform_var_files(cfg: dict, args, cfg_global: dict):
         Global config containing AWS account details
     """
     # -- 1. Generate Terraform vars for buckets
-    path = f"./{args.project}/"
+    path = os.path.join(PROJECT_ROOT, args.name,)
     document_buckets = f"""ge-bucket-name      = "{cfg["store_bucket"]}"
-ge-site-bucket-name = "{cfg["site_bucket"]}"
-ge-data-bucket-name = "{cfg["data_bucket"]}"
-"""
+    ge-site-bucket-name = "{cfg["site_bucket"]}"
+    ge-data-bucket-name = "{cfg["data_bucket"]}"
+    """
 
     # -- 2. Generate Terraform vars for lambda
     image_uri = (
@@ -481,8 +499,8 @@ ge-data-bucket-name = "{cfg["data_bucket"]}"
 
     # -- 3. Write files
     paths_out = [
-        f"./{args.project}/terraform/buckets/{args.project}.auto.tfvars",
-        f"./{args.project}/terraform/lambda/{args.project}.auto.tfvars",
+        os.path.join(PROJECT_ROOT, args.name, 'terraform', 'buckets', f"{args.name}.auto.tfvars"),
+        os.path.join(PROJECT_ROOT, args.name, 'terraform', 'lambda', f"{args.name}.auto.tfvars")
     ]
     for path, doc in zip(paths_out, [document_buckets, document_lambda]):
         with open(path, "w") as out:
@@ -512,43 +530,44 @@ def copy_and_overwrite_tree(
 def adjust_for_tutorial(args):
     """Helper function to move files into tutorial directory if tutorial is being run"""
     logger.info("Making adjustments for running the tutorial")
-    if args.project == "tutorial":
+    if args.name == "tutorial":
         # -- 1. Add tutorial Terraform files
         # -- .1 Buckets
-        orig = "bootstrap_files/tutorial_files/terraform/tutorial_bucket/"
-        dest = f"{args.project}/terraform/buckets/"
+        orig = os.path.join(PACKAGE_ROOT, 'bootstrap_files', 'tutorial_files', 'terraform', 'tutorial_bucket')
+        dest = os.path.join(PROJECT_ROOT, args.name, 'terraform', 'buckets')
         for tutorial_file in os.listdir(orig):
-            shutil.copy2(orig + tutorial_file, dest + tutorial_file)
+            shutil.copy2(os.path.join(orig, tutorial_file), os.path.join(dest, tutorial_file))
 
-        # -- .2 Lambda
-        orig = "bootstrap_files/tutorial_files/terraform/tutorial_lambda/"
-        dest = f"{args.project}/terraform/lambda/"
+        # # -- .2 Lambda
+        orig = os.path.join(PACKAGE_ROOT, 'bootstrap_files', 'tutorial_files', 'terraform', 'tutorial_lambda')
+        dest = os.path.join(PROJECT_ROOT, args.name, 'terraform', 'lambda')
         for tutorial_file in os.listdir(orig):
-            shutil.copy2(orig + tutorial_file, dest + tutorial_file)
+            shutil.copy2(os.path.join(orig, tutorial_file), os.path.join(dest, tutorial_file))
 
-        # -- 2. Add tutorial data
-        orig = "bootstrap_files/tutorial_files/tutorial_data"
-        dest = f"{args.project}/data"
+        # # -- 2. Add tutorial data
+        orig = os.path.join(PACKAGE_ROOT, 'bootstrap_files', 'tutorial_files', 'tutorial_data')
+        dest = os.path.join(PROJECT_ROOT, args.name, 'data')
         copy_and_overwrite_tree(orig, dest)
 
         # -- 3. Copy tutorial notebook and remove expectation_suite.ipynb
-        orig = "bootstrap_files/tutorial_files/tutorial_notebook.ipynb"
-        dest = f"{args.project}/tutorial_notebook.ipynb"
+        orig = os.path.join(PACKAGE_ROOT, 'bootstrap_files', 'tutorial_files', 'tutorial_notebook.ipynb')
+        dest = os.path.join(PROJECT_ROOT, args.name, 'tutorial_notebook.ipynb')
         shutil.copy2(orig, dest)
-        os.remove(f"{args.project}/expectation_suite.ipynb")
+        os.remove(os.path.join(PROJECT_ROOT, args.name, 'expectation_suite.ipynb'))
 
-        # -- 4. Replace lambda function
-        orig = "bootstrap_files/tutorial_files/lambda_function.py"
-        dest = f"{args.project}/lambda_function.py"
+        # # -- 4. Replace lambda function        
+        orig = os.path.join(PACKAGE_ROOT, 'bootstrap_files', 'tutorial_files', 'lambda_function.py')
+        dest = os.path.join(PROJECT_ROOT, args.name, 'lambda_function.py')
         shutil.copy2(orig, dest)
 
 
 def start_notebook(args, notebook_name: str = "expectation_suite"):
     """Helper function to open up the expectation_suite.ipynb notebook upon
     initialization of a new project"""
-    logger.info(f"Opening {notebook_name} notebook for project {args.project}")
-    path = f"./{args.project}"
-    os.system(f"nbopen {path}/{notebook_name}.ipynb")
+    logger.info(f"Opening {notebook_name} notebook for project {args.name}")
+    path = os.path.join(PROJECT_ROOT, args.name, f'{notebook_name}.ipynb')
+    print(path)
+    os.system(f'nbopen "{path}"')
 
 
 if __name__ == "__main__":
