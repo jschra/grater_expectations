@@ -252,6 +252,8 @@ def generate_project_files(args):
         logger.info("Replacing generated files with non-verbose versions")
         path = os.path.join(PACKAGE_ROOT, "bootstrap_files", "non_verbose_files")
         for nv_file in os.listdir(path):
+            if nv_file == '__pycache__':
+                continue
             orig = os.path.join(path, nv_file)
             dest = os.path.join(to_path, nv_file)
             shutil.copy2(orig, dest)
