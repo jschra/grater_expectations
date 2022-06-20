@@ -82,25 +82,46 @@ Throughout the rest of the documentation, it is assumed you have these tools and
 <hr>
 
 ## Getting started
-In order to start using this repository, it must be first cloned to your local machine.
 
-After cloning the repository, it is highly recommended that you create a new virtual 
-environment to run the code in. A `requirements.txt` file is available in the repository
-that contains all necessary packages to run this code on Python 3.8.
-
-If you use [anaconda](https://www.anaconda.com/products/distribution), a new environment 
-can be installed as follows (if you run it from the root of the repository):
+### Option 1 - Pip (Recommended)
+Install Grater Expectations via [pip](https://pip.pypa.io/en/stable/getting-started/)
 
 ```bash
+# Create a virtual environment
+python -m venv env
+
+# Activate the virtual environment
+env/Scripts/Activate # Windows
+source env/bin/activate # MacOS
+
+# Install into the virtual envirpnment
+pip install grater_expectations
+```
+
+### Option 2 - Anaconda
+Install Grater Expectations via [Anaconda](https://www.anaconda.com/products/distribution)
+
+```bash
+# Create a conda environment
 conda create --name grater_expectations python=3.8
+
+# Activate the conda environment
 conda activate grater_expectations
-pip install -r requirements.txt
+
+# Install into the virtual environment
+conda install grater_expectations
 ```
 <br>
 <hr>
 
 ## Creating a new project
-When you want to develop a new set of tests for a specific dataset, you first need to add new configurations for said project. This can be done by adding a new project to the `testing_config.yml` file at the root of the repository.
+When you want to develop a new set of tests for a specific dataset, you first need to create new configuration for your project. This can be done by running the following command:
+
+```bash
+grater create config
+```
+
+It will create a `testing_config.yml` file at the root of your repository. You need to change the config parameters before generating the project files.
 
 Nested under the project name (e.g. tutorial), the configuration file is expected to contain the following keys:
 
@@ -144,17 +165,16 @@ Below you can find an example of a filled in project configuration:
 
 <br>
 
-After adding the required configurations in `testing_config.yml`, your new project can be initialized by calling `initialize_project.py` from the command line and passing the name of the project (mirroring the name you put down in the config) as -p or --project argument. Note that this is best done using the previously created virtual environment. You should call this script from the root directory of the repository.
+After adding the required configurations in `testing_config.yml`, your new project can be initialized by calling `grater create project --name project_name` from the command line and passing the name of the project (mirroring the name you put down in the config) as -n or --name argument. Note that this is best done using the previously created virtual environment. You should call this script from the root directory of the repository.
 
 For example, assuming you created the grater_expectations virtual environment, you entered
 the required configuration in `testing_config.yml` under the name tutorial and you started a terminal in the root directory of the repository, a new project can be initialized as follows:
 
 ```bash
-conda activate grater_expectations
-python initialize_project.py --project tutorial
+grater create project --name tutorial
 ```
 
-By default, projects are initialized with files containing a lot of documentation and comments. If you would prefer to use non verbose files, use the -nv or --nonverbose argument when initializing a project, e.g. `python initialize_project.py --project tutorial -nv`
+By default, projects are initialized with files containing a lot of documentation and comments. If you would prefer to use non verbose files, use the -nv or --nonverbose flags when initializing a project, e.g. `grater create project --name project_name --nonverbose`
 
 When the initialization runs correctly, a new project directory with related files will be set up for you and a Python notebook will be opened to start writing your first
 expectation suite. The newly created directory will look like this:
@@ -171,7 +191,6 @@ expectation suite. The newly created directory will look like this:
 After initializing a new project, an iPython notebook called `expectation_suite.ipynb` will automatically open, containing information on how to start configuring your project and writing your expectations. If you want to (re-)open said notebook at a later stage, you can do so by calling the following command from the terminal in the project directory:
 
 ```bash
-conda activate grater_expectations
 nbopen expectation_suite.ipynb
 ```
 
@@ -184,7 +203,7 @@ Apart from the guidance the notebook provides, it is **important to note** that 
 
 After generating a testing suite, a checkpoint to run and a Data Docs website using the expectation suite notebook, the next step is to set up a Lambda function that can be called to validate new batches of data against the generated expectation suite.
 
-When `initialize_project.py` was run, an initial setup for this was created in `lambda_function.py`. To make this Lambda function work, there are a few things that need to be specified by the developer:
+When `grater create project --name project_name` was run, an initial setup for this was created in `lambda_function.py`. To make this Lambda function work, there are a few things that need to be specified by the developer:
 
 1. **Logic for loading data**: at runtime, the Lambda needs to be able to load a batch of data to memory (as pandas DataFrame) in order to run validations. Hence, it requires logic to do so. If you've previously created such logic for the `expectation_suite.ipynb` and stored that in `supporting_functions.py`, you should import it into the Lambda function and re-use it.
 2. **Event information for loading data**: in order for the Lambda function to figure out what to load, the Lambda has been set up to expect such information in the event parameter passed at runtime. E.g. if you expect the Lambda to load and validate a specific csv dataset each month, you could trigger it by sending the prefix of the dataset on S3. If the Lambda knows which bucket the data resides in, this information alone is enough for it to load it.
@@ -199,7 +218,7 @@ If the Lambda is properly configured, it can now be used to run validations agai
 
 Because there are size constraints when it comes to using Python packages on AWS Lambda (max 250MB of loaded packages through layers), the decision was made to use Docker images instead (for which the size constraint is 10GB).
 
-Although this decision increases the complexity of the deployment a bit, `initialize_project.py` already provides you with all the boilerplate code you need to create a Docker image and load it to ECR. Said logic can be found in:
+Although this decision increases the complexity of the deployment a bit, `grater create project --name project_name` already provides you with all the boilerplate code you need to create a Docker image and load it to ECR. Said logic can be found in:
 - Dockerfile: this file contains the required steps to build a new Docker image to deploy on AWS
 - build_image_store_on_ecr.sh: bash script containing all steps to create a new Docker image using the Dockerfile and load it to ECR, provided you have Docker Engine and AWS CLI installed and your user credentials (AWS) can be accessed.
 
@@ -232,7 +251,7 @@ sh build_imstage_store_on_ecr.sh
 
 ## Deploying the Lambda on AWS
 
-After deploying the Docker image on ECR, it can be used in an AWS Lambda. When `initialize_project.py` was ran, Terraform configurations wwere generated to help you set up this lambda. The configurations can be found in the terraform/lambda subdirectory of your project.
+After deploying the Docker image on ECR, it can be used in an AWS Lambda. When `grater create project --name project_name` was run, Terraform configurations wwere generated to help you set up this lambda. The configurations can be found in the terraform/lambda subdirectory of your project.
 
 To use these, enter your terminal, browse to this directory and call the `terraform init` and `terraform apply` commands, as shown below (with AWS credentials set in the terminal).
 
@@ -264,7 +283,7 @@ Furthermore, additional Lambda's and/or logic can be set up to alert developers 
 
 ## Tutorial
 
-A tutorial is available to help you get started with using Grater Expectations. To run it, make sure that your [system is set up](#setting-up-your-system) for running all components. Next, [generate a virtual environment](#getting-started) to run the project in and ensure that it is used in your current terminal (e.g. by running `conda activate <environment-name>`).
+A tutorial is available to help you get started with using Grater Expectations. To run it, make sure that your [system is set up](#setting-up-your-system) for running all components. Next, [generate a virtual environment](#getting-started) to run the project in and ensure that it is used in your current terminal (e.g. by running `<environment-name>/Scripts/Activate` or `conda activate <environment-name>`).
 
 After activating your virtual environment, it is best to set your AWS access credentials as environment variables in your current session, so these can also be access by programs started up from this terminal. In (Git) bash, you can do so with the following command:
 
@@ -294,4 +313,4 @@ Next, open the `testing_config.yml` configuration file (found at the root of thi
 
 Example values for these can be found under the [Creating a new project](#creating-a-new-project) section. You can use the default values for the other parameters. 
 
-After doing so, you can initialize the tutorial on your local machine by calling `python initialize_project.py -p tutorial` at the root of this repository. The files for the tutorial will then automatically be generated, after which a tutorial notebook will be opened for you.
+After doing so, you can initialize the tutorial on your local machine by calling `grater create project --name tutorial` at the root of this repository. The files for the tutorial will then automatically be generated, after which a tutorial notebook will be opened for you.
