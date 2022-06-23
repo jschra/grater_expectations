@@ -45,6 +45,10 @@ def main_program():
         dst = os.path.join(PROJECT_ROOT, CONFIGS_FILE)
         shutil.copy(src, dst)
 
+        logger.info(
+            "Config file created. Please save project relevant configurations in testing_config.yml and run grater create project"
+        )
+
     # -- 2. Load and check configurations
     if args.create == "project":
 
