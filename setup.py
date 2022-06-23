@@ -12,7 +12,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="grater_expectations",
-    version="1.0.0",
+    version="1.0.1",
     description="A grated application of Great Expectations to create greater Expectations",
     long_description=readme,
     long_description_content_type="text/markdown",
