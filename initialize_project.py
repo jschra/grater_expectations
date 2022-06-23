@@ -7,8 +7,8 @@ import logging
 
 
 PACKAGE_ROOT = os.path.dirname(__file__)
-PROJECT_ROOT = os.path.abspath('.')
-CONFIGS_FILE = 'testing_config.yml'
+PROJECT_ROOT = os.path.abspath(".")
+CONFIGS_FILE = "testing_config.yml"
 
 # Logger
 logging.basicConfig(
@@ -36,8 +36,11 @@ def main_program():
     create_prj.add_argument("-nv", "--nonverbose", action="store_true")
 
     args = parser.parse_args()
-    
+
     if args.create == "config":
+        logger.info(
+            "Creating configuration file testing_config.yml in current directory"
+        )
         src = os.path.join(PACKAGE_ROOT, CONFIGS_FILE)
         dst = os.path.join(PROJECT_ROOT, CONFIGS_FILE)
         shutil.copy(src, dst)
@@ -236,7 +239,7 @@ def generate_project_files(args):
         can also contain --nonverbose/-nv
     """
     # -- 1. Copy files from bootstrap files
-    from_path = os.path.join(PACKAGE_ROOT, 'bootstrap_files')
+    from_path = os.path.join(PACKAGE_ROOT, "bootstrap_files")
     to_path = os.path.join(PROJECT_ROOT, args.name)
 
     copy_and_overwrite_tree(
@@ -252,7 +255,7 @@ def generate_project_files(args):
         logger.info("Replacing generated files with non-verbose versions")
         path = os.path.join(PACKAGE_ROOT, "bootstrap_files", "non_verbose_files")
         for nv_file in os.listdir(path):
-            if nv_file == '__pycache__':
+            if nv_file == "__pycache__":
                 continue
             orig = os.path.join(path, nv_file)
             dest = os.path.join(to_path, nv_file)
@@ -278,7 +281,9 @@ def generate_project_config(cfg: dict, args, cfg_global: dict = None):
 
     # -- Write file
     doc_out = yaml.dump(cfg, default_flow_style=False)
-    with open(os.path.join(PROJECT_ROOT, args.name, 'project_config.yml'), "w") as project_yaml:
+    with open(
+        os.path.join(PROJECT_ROOT, args.name, "project_config.yml"), "w"
+    ) as project_yaml:
         project_yaml.write(doc_out)
 
 
@@ -376,7 +381,10 @@ def generate_ge_config(cfg: dict, args):
         os.mkdir(os.path.join(path, "great_expectations"))
 
     with open(
-        os.path.join(PROJECT_ROOT, args.name, 'great_expectations', 'great_expectations.yml'), "w"
+        os.path.join(
+            PROJECT_ROOT, args.name, "great_expectations", "great_expectations.yml"
+        ),
+        "w",
     ) as out:
         out.write(base_yaml)
 
@@ -432,7 +440,9 @@ aws ecr create-repository --repository-name {docker_image} --image-scanning-conf
 docker tag {docker_image}:latest {ECR_endpoint}/{docker_image}:latest
 docker push {ECR_endpoint}/{docker_image}:latest"""
 
-    with open(os.path.join(PROJECT_ROOT, args.name, 'build_image_store_on_ecr.sh'), 'w') as out: 
+    with open(
+        os.path.join(PROJECT_ROOT, args.name, "build_image_store_on_ecr.sh"), "w"
+    ) as out:
         out.write(document)
 
 
@@ -465,10 +475,10 @@ provider "aws" {{
 """
 
     # -- 2. Put in all Terraform directories
-    tf_dir = os.path.join(PROJECT_ROOT, args.name, 'terraform')
+    tf_dir = os.path.join(PROJECT_ROOT, args.name, "terraform")
     for path in os.listdir(tf_dir):
         print(path)
-        with open(os.path.join(tf_dir, path, 'provider.tf'), "w+") as out:
+        with open(os.path.join(tf_dir, path, "provider.tf"), "w+") as out:
             out.write(document)
 
 
@@ -501,8 +511,12 @@ def generate_terraform_var_files(cfg: dict, args, cfg_global: dict):
 
     # -- 3. Write files
     paths_out = [
-        os.path.join(PROJECT_ROOT, args.name, 'terraform', 'buckets', f"{args.name}.auto.tfvars"),
-        os.path.join(PROJECT_ROOT, args.name, 'terraform', 'lambda', f"{args.name}.auto.tfvars")
+        os.path.join(
+            PROJECT_ROOT, args.name, "terraform", "buckets", f"{args.name}.auto.tfvars"
+        ),
+        os.path.join(
+            PROJECT_ROOT, args.name, "terraform", "lambda", f"{args.name}.auto.tfvars"
+        ),
     ]
     for path, doc in zip(paths_out, [document_buckets, document_lambda]):
         with open(path, "w") as out:
@@ -535,31 +549,53 @@ def adjust_for_tutorial(args):
     if args.name == "tutorial":
         # -- 1. Add tutorial Terraform files
         # -- .1 Buckets
-        orig = os.path.join(PACKAGE_ROOT, 'bootstrap_files', 'tutorial_files', 'terraform', 'tutorial_bucket')
-        dest = os.path.join(PROJECT_ROOT, args.name, 'terraform', 'buckets')
+        orig = os.path.join(
+            PACKAGE_ROOT,
+            "bootstrap_files",
+            "tutorial_files",
+            "terraform",
+            "tutorial_bucket",
+        )
+        dest = os.path.join(PROJECT_ROOT, args.name, "terraform", "buckets")
         for tutorial_file in os.listdir(orig):
-            shutil.copy2(os.path.join(orig, tutorial_file), os.path.join(dest, tutorial_file))
+            shutil.copy2(
+                os.path.join(orig, tutorial_file), os.path.join(dest, tutorial_file)
+            )
 
         # # -- .2 Lambda
-        orig = os.path.join(PACKAGE_ROOT, 'bootstrap_files', 'tutorial_files', 'terraform', 'tutorial_lambda')
-        dest = os.path.join(PROJECT_ROOT, args.name, 'terraform', 'lambda')
+        orig = os.path.join(
+            PACKAGE_ROOT,
+            "bootstrap_files",
+            "tutorial_files",
+            "terraform",
+            "tutorial_lambda",
+        )
+        dest = os.path.join(PROJECT_ROOT, args.name, "terraform", "lambda")
         for tutorial_file in os.listdir(orig):
-            shutil.copy2(os.path.join(orig, tutorial_file), os.path.join(dest, tutorial_file))
+            shutil.copy2(
+                os.path.join(orig, tutorial_file), os.path.join(dest, tutorial_file)
+            )
 
         # # -- 2. Add tutorial data
-        orig = os.path.join(PACKAGE_ROOT, 'bootstrap_files', 'tutorial_files', 'tutorial_data')
-        dest = os.path.join(PROJECT_ROOT, args.name, 'data')
+        orig = os.path.join(
+            PACKAGE_ROOT, "bootstrap_files", "tutorial_files", "tutorial_data"
+        )
+        dest = os.path.join(PROJECT_ROOT, args.name, "data")
         copy_and_overwrite_tree(orig, dest)
 
         # -- 3. Copy tutorial notebook and remove expectation_suite.ipynb
-        orig = os.path.join(PACKAGE_ROOT, 'bootstrap_files', 'tutorial_files', 'tutorial_notebook.ipynb')
-        dest = os.path.join(PROJECT_ROOT, args.name, 'tutorial_notebook.ipynb')
+        orig = os.path.join(
+            PACKAGE_ROOT, "bootstrap_files", "tutorial_files", "tutorial_notebook.ipynb"
+        )
+        dest = os.path.join(PROJECT_ROOT, args.name, "tutorial_notebook.ipynb")
         shutil.copy2(orig, dest)
-        os.remove(os.path.join(PROJECT_ROOT, args.name, 'expectation_suite.ipynb'))
+        os.remove(os.path.join(PROJECT_ROOT, args.name, "expectation_suite.ipynb"))
 
-        # # -- 4. Replace lambda function        
-        orig = os.path.join(PACKAGE_ROOT, 'bootstrap_files', 'tutorial_files', 'lambda_function.py')
-        dest = os.path.join(PROJECT_ROOT, args.name, 'lambda_function.py')
+        # # -- 4. Replace lambda function
+        orig = os.path.join(
+            PACKAGE_ROOT, "bootstrap_files", "tutorial_files", "lambda_function.py"
+        )
+        dest = os.path.join(PROJECT_ROOT, args.name, "lambda_function.py")
         shutil.copy2(orig, dest)
 
 
@@ -567,7 +603,7 @@ def start_notebook(args, notebook_name: str = "expectation_suite"):
     """Helper function to open up the expectation_suite.ipynb notebook upon
     initialization of a new project"""
     logger.info(f"Opening {notebook_name} notebook for project {args.name}")
-    path = os.path.join(PROJECT_ROOT, args.name, f'{notebook_name}.ipynb')
+    path = os.path.join(PROJECT_ROOT, args.name, f"{notebook_name}.ipynb")
     print(path)
     os.system(f'nbopen "{path}"')
 
