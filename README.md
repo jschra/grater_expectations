@@ -121,7 +121,7 @@ When you want to develop a new set of tests for a specific dataset, you first ne
 grater create config
 ```
 
-It will create a `testing_config.yml` file at the root of your repository. You need to change the config parameters before generating the project files.
+It will create a `testing_config.yml` file at the root of your current directory. Within this file, you need to change the config parameters before you can generate project files.
 
 Nested under the project name (e.g. tutorial), the configuration file is expected to contain the following keys:
 
