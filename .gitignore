@@ -53,6 +53,7 @@ __pycache__
 # Terraform files
 # Env files
 .env
+env/
 
 # Terraform state files
 *.tfstate
@@ -69,3 +70,7 @@ terraform/api.zip
 
 # Tutorial folder
 tutorial
+
+# Pip build
+build/
+grater_expectations.egg-info/

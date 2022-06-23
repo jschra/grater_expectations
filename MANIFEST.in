@@ -1,0 +1,12 @@
+include testing_config.yml
+
+include bootstrap_files/*
+
+include bootstrap_files/non_verbose_files/*
+include bootstrap_files/terraform/buckets/*
+include bootstrap_files/terraform/lambda/*
+
+include bootstrap_files/tutorial_files/*
+include bootstrap_files/tutorial_files/terraform/tutorial_bucket/*
+include bootstrap_files/tutorial_files/terraform/tutorial_lambda/*
+include bootstrap_files/tutorial_files/tutorial_data/*
