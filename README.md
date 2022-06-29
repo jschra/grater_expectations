@@ -84,7 +84,7 @@ Throughout the rest of the documentation, it is assumed you have these tools and
 ## Getting started
 
 ### Option 1 - Pip (Recommended)
-Install Grater Expectations via [pip](https://pip.pypa.io/en/stable/getting-started/)
+Install Grater Expectations via [pip](https://pip.pypa.io/en/stable/getting-started/). It is recommended to create a virtual environment using Python 3.8.
 
 ```bash
 # Create a virtual environment
@@ -285,7 +285,7 @@ Furthermore, additional Lambda's and/or logic can be set up to alert developers 
 
 A tutorial is available to help you get started with using Grater Expectations. To run it, make sure that your [system is set up](#setting-up-your-system) for running all components. Next, [generate a virtual environment](#getting-started) to run the project in and ensure that it is used in your current terminal (e.g. by running `<environment-name>/Scripts/Activate` or `conda activate <environment-name>`).
 
-After activating your virtual environment, it is best to set your AWS access credentials as environment variables in your current session, so these can also be access by programs started up from this terminal. In (Git) bash, you can do so with the following command:
+After activating your virtual environment, it is best to set your AWS access credentials as environment variables in your current session, so these can also be accessed by programs started up from this terminal. In (Git) bash, you can do so with the following command:
 
 <br>
 
@@ -300,7 +300,7 @@ export AWS_SECRET_ACCESS_KEY=<enter_aws_secret_access_key_here>
 
 <br>
 
-Next, make sure that you install Grater Expectations in your (new) virtual environment and call create config to generate a `testing_config.yml` file, as shown below.
+Next, make sure that you install Grater Expectations in your (new) virtual environment if you haven't done so and call create config to generate a `testing_config.yml` file, as shown below.
 
 <br>
 
