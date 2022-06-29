@@ -300,7 +300,21 @@ export AWS_SECRET_ACCESS_KEY=<enter_aws_secret_access_key_here>
 
 <br>
 
-Next, open the `testing_config.yml` configuration file (found at the root of this repository) and enter names for the following parameters:
+Next, make sure that you install Grater Expectations in your (new) virtual environment and call create config to generate a `testing_config.yml` file, as shown below.
+
+<br>
+
+```bash
+# Install grater expectations
+pip install grater_expectations
+
+# Generate a new config file
+grater create config
+```
+
+<br>
+
+Next, open the `testing_config.yml` configuration file and fill in the following parameters:
 
 **Global parameters**
 1. account_id
