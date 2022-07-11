@@ -1,4 +1,5 @@
 from setuptools import setup
+from version import __version__
 
 
 with open("README.md") as f:
@@ -12,7 +13,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="grater_expectations",
-    version="1.0.1",
+    version=__version__,
     description="A grated application of Great Expectations to create greater Expectations",
     long_description=readme,
     long_description_content_type="text/markdown",
@@ -26,3 +27,5 @@ setup(
     entry_points={"console_scripts": ["grater = initialize_project:main_program"],},
     python_requires=">=3.8",
 )
+
+    
