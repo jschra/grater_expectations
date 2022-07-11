@@ -1,4 +1,6 @@
+from version import __version__
 from argparse import ArgumentParser
+from jinja2 import Template
 import os
 import shutil
 import ruamel.yaml as yaml
@@ -24,6 +26,7 @@ def main_program():
     # -- 1. Parse arguments passed at runtime from terminal
     logger.info("Parsing command line arguments")
     parser = ArgumentParser()
+    parser.add_argument('-v', '--version', action='version', version=__version__)
     subparsers = parser.add_subparsers()
 
     create = subparsers.add_parser("create")
@@ -304,82 +307,13 @@ def generate_ge_config(cfg: dict, args):
     """
     logger.info("Generating Great Expectations configuration file")
     path = os.path.join(PROJECT_ROOT, args.name)
-    base_yaml = f"""
-  # config_version refers to the syntactic version of this config file, and is used in maintaining backwards compatibility
-  # It is auto-generated and usually does not need to be changed.
-  config_version: 3.0\n
-  # Datasources tell Great Expectations where your data lives and how to get it.
-  datasources:
-    runtime_data:
-      execution_engine:
-        module_name: great_expectations.execution_engine
-        class_name: PandasExecutionEngine
-      data_connectors:
-        runtime_data_connector:
-          batch_identifiers:
-            - batch_identifier
-          class_name: RuntimeDataConnector\n
-  stores:
-  # Stores are configurable places to store things like Expectations, Validations
-  # Data Docs, and more. These are for advanced users only - most users can simply
-  # leave this section alone.
-  #
-  # Three stores are required: expectations, validations, and
-  # evaluation_parameters, and must exist with a valid store entry. Additional
-  # stores can be configured for uses such as data_docs, etc.
-    expectations_store:
-      class_name: ExpectationsStore
-      store_backend:
-        class_name: TupleS3StoreBackend
-        bucket: {cfg["store_bucket"]}
-        prefix: {cfg["store_bucket_prefix"]}/expectations/\n
-    validations_store:
-      class_name: ValidationsStore
-      store_backend:
-        class_name: TupleS3StoreBackend
-        bucket: {cfg["store_bucket"]}
-        prefix: {cfg["store_bucket_prefix"]}/validations/\n
-    evaluation_parameter_store:
-      class_name: EvaluationParameterStore\n
-    checkpoint_store:
-      class_name: CheckpointStore
-      store_backend:
-        class_name: TupleS3StoreBackend
-        bucket: {cfg["store_bucket"]}
-        prefix: {cfg["store_bucket_prefix"]}/checkpoints/\n
-    profiler_store:
-      class_name: ProfilerStore
-      store_backend:
-        class_name: TupleS3StoreBackend
-        bucket: {cfg["store_bucket"]}
-        prefix: {cfg["store_bucket_prefix"]}/profiles/
-        suppress_store_backend_id: true\n
-  expectations_store_name: expectations_store
-  validations_store_name: validations_store
-  evaluation_parameter_store_name: evaluation_parameter_store
-  checkpoint_store_name: checkpoint_store
-  profiler_store_name: profiler_store\n
-  data_docs_sites:
-  # Data Docs make it simple to visualize data quality in your project. These
-  # include Expectations, Validations & Profiles. The are built for all
-  # Datasources from JSON artifacts in the local repo including validations &
-  # profiles from the uncommitted directory. Read more at https://docs.greatexpectations.io/en/latest/reference/core_concepts/data_docs.html
-    {cfg["site_name"]}:
-      class_name: SiteBuilder
-      # set to false to hide how-to buttons in Data Docs
-      show_how_to_buttons: true
-      store_backend:
-        class_name: TupleS3StoreBackend
-        bucket: {cfg["site_bucket"]}
-        prefix: {cfg["site_bucket_prefix"]}
-      site_index_builder:
-        class_name: DefaultSiteIndexBuilder
+    ge_config = os.path.join(PACKAGE_ROOT, 'docs', 'templates', 'ge_config.yaml')
+    idx = str(uuid.uuid4())
 
+    with open(ge_config, 'r') as filename:
+        template = Template(filename.read())
+        base_yaml = template.render(cfg=cfg, idx=idx)
 
-  anonymous_usage_statistics:
-    enabled: true
-    data_context_id: {str(uuid.uuid4())}
-  """
     print(os.listdir(path))
     if "great_expectations" not in os.listdir(path):
         os.mkdir(os.path.join(path, "great_expectations"))
@@ -416,33 +350,15 @@ def generate_ecr_bash_script(cfg: dict, args, cfg_global: dict):
     )
     docker_image = cfg["docker_image_name"]
     region = cfg_global["region"]
-    document = f"""#!/bin/bash
-    
-# Ensure region is (temporarily) set to prevent errors
-export AWS_DEFAULT_REGION="eu-west-1"
+    ecr_sh = os.path.join(PACKAGE_ROOT, 'docs', 'templates', 'ecr.sh')
 
-# Change permissions of files. Otherwise upstream lambda will give permission error
-chmod 644 $(find . -type f)
-chmod 755 $(find . -type d)
-
-# Temporarily copy requirements.txt for usage w/ Dockerfile
-cp ../requirements.txt ./requirements.txt
-
-# Build image
-docker build -t {docker_image} .
-
-# Remove requirements.txt
-rm -rf requirements.txt
-
-# Log into AWS and ECR
-aws ecr get-login-password --region {region} | docker login --username AWS --password-stdin {ECR_endpoint}
-
-# Create test repo, gives warning but continues of it already exists
-aws ecr create-repository --repository-name {docker_image} --image-scanning-configuration scanOnPush=true --image-tag-mutability MUTABLE || true
-
-# Tag image and push to ECR
-docker tag {docker_image}:latest {ECR_endpoint}/{docker_image}:latest
-docker push {ECR_endpoint}/{docker_image}:latest"""
+    with open(ecr_sh, 'r') as filename:
+        template = Template(filename.read())
+        document = template.render(
+            docker_image=docker_image,
+            ECR_endpoint=ECR_endpoint,
+            region=region
+        )
 
     with open(
         os.path.join(PROJECT_ROOT, args.name, "build_image_store_on_ecr.sh"), "w"
@@ -462,21 +378,12 @@ def generate_terraform_provider_config(args, cfg_global: dict):
         Global config containing AWS account details
     """
     # -- 1. Generate document
-    document = f"""# NOTE: It's best to run Terraform using state stored in a state bucket. For more
-# information, please refer to https://www.terraform.io/language/state/remote
-terraform {{
-  required_providers {{
-    aws = {{
-      source  = "hashicorp/aws"
-      version = "~> 4.0.0"
-    }}
-  }}
-}}
+    provider = os.path.join(PACKAGE_ROOT, 'docs', 'templates', 'provider.tf')
 
-provider "aws" {{
-  region = "{cfg_global["region"]}"
-}}
-"""
+    with open(provider, 'r') as filename:
+        template = Template(filename.read())
+        document = template.render(cfg_global=cfg_global)
+        print(document)
 
     # -- 2. Put in all Terraform directories
     tf_dir = os.path.join(PROJECT_ROOT, args.name, "terraform")
