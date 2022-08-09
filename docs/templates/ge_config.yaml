@@ -1,0 +1,74 @@
+# config_version refers to the syntactic version of this config file, and is used in maintaining backwards compatibility
+# It is auto-generated and usually does not need to be changed.
+config_version: 3.0\n
+# Datasources tell Great Expectations where your data lives and how to get it.
+datasources:
+  runtime_data:
+    execution_engine:
+      module_name: great_expectations.execution_engine
+      class_name: PandasExecutionEngine
+    data_connectors:
+      runtime_data_connector:
+        batch_identifiers:
+          - batch_identifier
+        class_name: RuntimeDataConnector\n
+stores:
+# Stores are configurable places to store things like Expectations, Validations
+# Data Docs, and more. These are for advanced users only - most users can simply
+# leave this section alone.
+#
+# Three stores are required: expectations, validations, and
+# evaluation_parameters, and must exist with a valid store entry. Additional
+# stores can be configured for uses such as data_docs, etc.
+  expectations_store:
+    class_name: ExpectationsStore
+    store_backend:
+      class_name: TupleS3StoreBackend
+      bucket: {{ cfg["store_bucket"] }}
+      prefix: {{ cfg["store_bucket_prefix"] }}/expectations/\n
+  validations_store:
+    class_name: ValidationsStore
+    store_backend:
+      class_name: TupleS3StoreBackend
+      bucket: {{ cfg["store_bucket"] }}
+      prefix: {{ cfg["store_bucket_prefix"] }}/validations/\n
+  evaluation_parameter_store:
+    class_name: EvaluationParameterStore\n
+  checkpoint_store:
+    class_name: CheckpointStore
+    store_backend:
+      class_name: TupleS3StoreBackend
+      bucket: {{ cfg["store_bucket"] }}
+      prefix: {{ cfg["store_bucket_prefix"] }}/checkpoints/\n
+  profiler_store:
+    class_name: ProfilerStore
+    store_backend:
+      class_name: TupleS3StoreBackend
+      bucket: {{ cfg["store_bucket"] }}
+      prefix: {{ cfg["store_bucket_prefix"] }}/profiles/
+      suppress_store_backend_id: true\n
+expectations_store_name: expectations_store
+validations_store_name: validations_store
+evaluation_parameter_store_name: evaluation_parameter_store
+checkpoint_store_name: checkpoint_store
+profiler_store_name: profiler_store\n
+data_docs_sites:
+# Data Docs make it simple to visualize data quality in your project. These
+# include Expectations, Validations & Profiles. The are built for all
+# Datasources from JSON artifacts in the local repo including validations &
+# profiles from the uncommitted directory. Read more at https://docs.greatexpectations.io/en/latest/reference/core_concepts/data_docs.html
+  {{ cfg["site_name"] }}:
+    class_name: SiteBuilder
+    # set to false to hide how-to buttons in Data Docs
+    show_how_to_buttons: true
+    store_backend:
+      class_name: TupleS3StoreBackend
+      bucket: {{ cfg["site_bucket"] }}
+      prefix: {{ cfg["site_bucket_prefix"] }}
+    site_index_builder:
+      class_name: DefaultSiteIndexBuilder
+
+
+anonymous_usage_statistics:
+  enabled: true
+  data_context_id: {{ idx }}
