@@ -26,7 +26,7 @@ def main_program():
     # -- 1. Parse arguments passed at runtime from terminal
     logger.info("Parsing command line arguments")
     parser = ArgumentParser()
-    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument("-v", "--version", action="version", version=__version__)
     subparsers = parser.add_subparsers()
 
     create = subparsers.add_parser("create")
@@ -268,6 +268,11 @@ def generate_project_files(args):
             dest = os.path.join(to_path, nv_file)
             shutil.copy2(orig, dest)
 
+    # -- 3. Copy requirements.txt
+    orig = os.path.join(PACKAGE_ROOT, "requirements.txt")
+    dest = os.path.join(PROJECT_ROOT, "requirements.txt")
+    shutil.copy2(orig, dest)
+
 
 def generate_project_config(cfg: dict, args, cfg_global: dict = None):
     """Function to copy and write project specific configurations
@@ -307,10 +312,10 @@ def generate_ge_config(cfg: dict, args):
     """
     logger.info("Generating Great Expectations configuration file")
     path = os.path.join(PROJECT_ROOT, args.name)
-    ge_config = os.path.join(PACKAGE_ROOT, 'docs', 'templates', 'ge_config.yaml')
+    ge_config = os.path.join(PACKAGE_ROOT, "docs", "templates", "ge_config.yaml")
     idx = str(uuid.uuid4())
 
-    with open(ge_config, 'r') as filename:
+    with open(ge_config, "r") as filename:
         template = Template(filename.read())
         base_yaml = template.render(cfg=cfg, idx=idx)
 
@@ -350,14 +355,12 @@ def generate_ecr_bash_script(cfg: dict, args, cfg_global: dict):
     )
     docker_image = cfg["docker_image_name"]
     region = cfg_global["region"]
-    ecr_sh = os.path.join(PACKAGE_ROOT, 'docs', 'templates', 'ecr.sh')
+    ecr_sh = os.path.join(PACKAGE_ROOT, "docs", "templates", "ecr.sh")
 
-    with open(ecr_sh, 'r') as filename:
+    with open(ecr_sh, "r") as filename:
         template = Template(filename.read())
         document = template.render(
-            docker_image=docker_image,
-            ECR_endpoint=ECR_endpoint,
-            region=region
+            docker_image=docker_image, ECR_endpoint=ECR_endpoint, region=region
         )
 
     with open(
@@ -378,9 +381,9 @@ def generate_terraform_provider_config(args, cfg_global: dict):
         Global config containing AWS account details
     """
     # -- 1. Generate document
-    provider = os.path.join(PACKAGE_ROOT, 'docs', 'templates', 'provider.tf')
+    provider = os.path.join(PACKAGE_ROOT, "docs", "templates", "provider.tf")
 
-    with open(provider, 'r') as filename:
+    with open(provider, "r") as filename:
         template = Template(filename.read())
         document = template.render(cfg_global=cfg_global)
         print(document)
