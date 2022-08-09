@@ -7,14 +7,8 @@ export AWS_DEFAULT_REGION="eu-west-1"
 chmod 644 $(find . -type f)
 chmod 755 $(find . -type d)
 
-# Temporarily copy requirements.txt for usage w/ Dockerfile
-cp ../requirements.txt ./requirements.txt
-
 # Build image
 docker build -t {{ docker_image }} .
-
-# Remove requirements.txt
-rm -rf requirements.txt
 
 # Log into AWS and ECR
 aws ecr get-login-password --region {{ region }} | docker login --username AWS --password-stdin {{ ECR_endpoint }}
