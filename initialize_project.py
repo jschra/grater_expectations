@@ -380,6 +380,7 @@ def generate_terraform_provider_config(args, cfg_global: dict):
     cfg_global : dict
         Global config containing AWS account details
     """
+    logger.info("Creating Terraform provider.tf configuration files")
     # -- 1. Generate document
     provider = os.path.join(PACKAGE_ROOT, "docs", "templates", "provider.tf")
 
@@ -407,6 +408,7 @@ def generate_terraform_var_files(cfg: dict, args, cfg_global: dict):
     cfg_global : dict
         Global config containing AWS account details
     """
+    logger.info("Creating Terraform variable configuration files")
     # -- 1. Generate Terraform vars for buckets
     path = os.path.join(PROJECT_ROOT, args.name,)
     document_buckets = f"""ge-bucket-name      = "{cfg["store_bucket"]}"
