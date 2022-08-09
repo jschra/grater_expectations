@@ -270,7 +270,7 @@ def generate_project_files(args):
 
     # -- 3. Copy requirements.txt
     orig = os.path.join(PACKAGE_ROOT, "requirements.txt")
-    dest = os.path.join(PROJECT_ROOT, "requirements.txt")
+    dest = os.path.join(PROJECT_ROOT, args.name, "requirements.txt")
     shutil.copy2(orig, dest)
 
 
