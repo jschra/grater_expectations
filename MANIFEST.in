@@ -1,7 +1,7 @@
 include testing_config.yml
 include requirements.txt
 
-include docs/*
+recursive-include docs *
 include bootstrap_files/*
 
 include bootstrap_files/non_verbose_files/*
