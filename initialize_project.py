@@ -386,12 +386,10 @@ def generate_terraform_provider_config(args, cfg_global: dict):
     with open(provider, "r") as filename:
         template = Template(filename.read())
         document = template.render(cfg_global=cfg_global)
-        print(document)
 
     # -- 2. Put in all Terraform directories
     tf_dir = os.path.join(PROJECT_ROOT, args.name, "terraform")
     for path in os.listdir(tf_dir):
-        print(path)
         with open(os.path.join(tf_dir, path, "provider.tf"), "w+") as out:
             out.write(document)
 
