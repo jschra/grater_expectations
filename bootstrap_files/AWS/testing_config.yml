@@ -2,6 +2,7 @@
 # Expectations project.
 
 # For the overall project, there are global configurations which contain:
+# - provider: the cloud provider for which the config was initialized. Set to AWS
 # - account_id: the account_id of the AWS account to be used
 # - region: the region used on AWS to deploy resources
 
