@@ -8,7 +8,7 @@ with open("README.md") as f:
 with open("LICENSE") as f:
     license = f.read()
 
-with open("requirements.txt") as f:
+with open("./bootstrap_files/AWS/requirements.txt") as f:
     requirements = f.read().splitlines()
 
 setup(
@@ -28,4 +28,3 @@ setup(
     python_requires=">=3.8",
 )
 
-    
