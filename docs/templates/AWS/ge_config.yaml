@@ -1,6 +1,7 @@
 # config_version refers to the syntactic version of this config file, and is used in maintaining backwards compatibility
 # It is auto-generated and usually does not need to be changed.
-config_version: 3.0\n
+config_version: 3.0
+
 # Datasources tell Great Expectations where your data lives and how to get it.
 datasources:
   runtime_data:
@@ -11,7 +12,8 @@ datasources:
       runtime_data_connector:
         batch_identifiers:
           - batch_identifier
-        class_name: RuntimeDataConnector\n
+        class_name: RuntimeDataConnector
+
 stores:
 # Stores are configurable places to store things like Expectations, Validations
 # Data Docs, and more. These are for advanced users only - most users can simply
@@ -51,7 +53,8 @@ expectations_store_name: expectations_store
 validations_store_name: validations_store
 evaluation_parameter_store_name: evaluation_parameter_store
 checkpoint_store_name: checkpoint_store
-profiler_store_name: profiler_store\n
+profiler_store_name: profiler_store
+
 data_docs_sites:
 # Data Docs make it simple to visualize data quality in your project. These
 # include Expectations, Validations & Profiles. The are built for all
@@ -67,7 +70,6 @@ data_docs_sites:
       prefix: {{ cfg["site_bucket_prefix"] }}
     site_index_builder:
       class_name: DefaultSiteIndexBuilder
-
 
 anonymous_usage_statistics:
   enabled: true

@@ -33,14 +33,14 @@
 
 global:
   provider: "AWS"
-  account_id: "asasdasdasd"
-  region: "asdasdasdasd"
+  account_id: "MUST_BE_SET"
+  region: "MUST_BE_SET"
 
 tutorial:
   # -- AWS configurations
-  store_bucket: "asdasdasdas"
+  store_bucket: "MUST_BE_SET"
   store_bucket_prefix: ""
-  site_bucket: "asdasdasdasdasd"
+  site_bucket: "MUST_BE_SET"
   site_bucket_prefix: ""
   docker_image_name: tutorial_image
 
