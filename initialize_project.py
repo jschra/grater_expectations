@@ -144,7 +144,7 @@ def initialize_parser() -> ArgumentParser:
         metavar="",
         type=str,
         required=True,
-        help="Cloud provider to initiatilize config for",
+        help="Cloud provider to initialize config for",
     )
 
     # -- .3 Add project to create subparser
