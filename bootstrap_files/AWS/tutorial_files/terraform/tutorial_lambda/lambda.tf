@@ -24,7 +24,7 @@ resource "aws_lambda_function" "validation_lambda" {
 # -------------------------------------------------------------
 
 # Create role for creating lambda function
-resource "aws_iam_role" "validation_lamnbda_role" {
+resource "aws_iam_role" "validation_lambda_role" {
   name = "grater_expectations_validation_lambda_tutorial"
 
   assume_role_policy = jsonencode({
@@ -73,6 +73,6 @@ EOF
 
 # Add policy to lambda role
 resource "aws_iam_role_policy_attachment" "validation_lambda_policy" {
-  role       = aws_iam_role.validation_lamnbda_role.name
+  role       = aws_iam_role.validation_lambda_role.name
   policy_arn = aws_iam_policy.validation_lambda_policy.arn
 }
