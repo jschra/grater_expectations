@@ -1,1 +1,4 @@
 # Placeholder
+
+global:
+  provider: "Azure"
