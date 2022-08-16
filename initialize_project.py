@@ -43,6 +43,8 @@ def main_program():
             f"Creating configuration file testing_config.yml for {args.provider} in "
             "current directory"
         )
+
+        _ = check_if_config_exists(PROJECT_ROOT)
         src = os.path.join(PACKAGE_ROOT, "bootstrap_files", args.provider, CONFIGS_FILE)
         dst = os.path.join(PROJECT_ROOT, CONFIGS_FILE)
         shutil.copy(src, dst)
@@ -159,6 +161,22 @@ def initialize_parser() -> ArgumentParser:
     )
 
     return parser
+
+
+def check_if_config_exists(project_root: str, config_name: str = "testing_config.yml"):
+    """Function to check if a configuration file already exists and ensure that the user
+     wants it to be overwritten, if that is the case"""
+    if config_name in os.listdir(project_root):
+        logger.info(
+            f"A Grater Expectations configuration file ({config_name}) already exists "
+            "in this directory. Are you sure you want to initialize a new file and "
+            "overwrite the existing one (y/[n])?"
+        )
+        response = input("Input: ")
+        if response in ["y", "Y", "yes", "Yes", "YES"]:
+            logger.info(f"Overwriting configuration file")
+        else:
+            raise SystemExit("Configuration file already exists, stopping creation")
 
 
 def get_config_project_keys(provider: str) -> list:
