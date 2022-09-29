@@ -1,0 +1,68 @@
+# config_version refers to the syntactic version of this config file, and is used in maintaining backwards compatibility
+# It is auto-generated and usually does not need to be changed.
+config_version: 3.0
+
+# Datasources tell Great Expectations where your data lives and how to get it.
+datasources:
+  runtime_data:
+    execution_engine:
+      module_name: great_expectations.execution_engine
+      class_name: PandasExecutionEngine
+    data_connectors:
+      runtime_data_connector:
+        batch_identifiers:
+          - batch_identifier
+        class_name: RuntimeDataConnector
+
+expectations_store_name: expectations_store
+validations_store_name: validations_store
+evaluation_parameter_store_name: evaluation_parameter_store
+checkpoint_store_name: checkpoint_store
+profiler_store_name: profiler_store
+        
+stores:
+  expectations_store_name:
+    class_name: ExpectationsStore
+    store_backend:
+      class_name: TupleFilesystemStoreBackend
+      container: {{ cfg["data_storage_container_name"] }}
+      prefix: expectations
+      connection_string: {{ cnx }}
+
+  validations_store:
+      class_name: ValidationsStore
+      store_backend:
+          class_name: TupleFilesystemStoreBackend
+          container: {{ cfg["data_storage_container_name"] }}
+          prefix: validations
+          connection_string: {{ cnx }}
+
+  checkpoint_store:
+    class_name: CheckpointStore
+    store_backend:
+      class_name: TupleFilesystemStoreBackend
+      container: {{ cfg["data_storage_container_name"] }}
+      prefix: checkpoint
+      connection_string: {{ cnx }}
+
+  profiler_store:
+    class_name: ProfilerStore
+    store_backend:
+      class_name: TupleFilesystemStoreBackend
+      container: {{ cfg["data_storage_container_name"] }}
+      prefix: profiler
+      connection_string: {{ cnx }}
+
+data_docs_sites:
+    class_name: SiteBuilder
+    show_how_to_buttons: true
+    store_backend:
+       class_name: TupleAzureBlobStoreBackend
+       container: {{ cfg["site_storage_container_name"] }}
+       connection_string: {{ cnx }}
+    site_index_builder:
+      class_name: DefaultSiteIndexBuilder
+
+anonymous_usage_statistics:
+  enabled: true
+  data_context_id: {{ idx }}
