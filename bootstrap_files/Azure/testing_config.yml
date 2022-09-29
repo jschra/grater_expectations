@@ -2,3 +2,19 @@
 
 global:
   provider: "Azure"
+  
+tutorial:
+  # -- Azure configurations
+  site_storage_container_name: "MUST_BE_SET"
+  data_storage_container_name: "MUST_BE_SET"
+  container_registry_name: "MUST_BE_SET"
+  docker_image_name: tutorial_image
+
+  # -- Great expectations parameters
+  site_name: "Tutorial expectations"
+  expectations_suite_name: "tutorial_test_suite"
+  checkpoint_name: "tutorial_checkpoint"
+  run_name_template: "tutorial run %d-%m-%Y"
+
+  # -- Data input parameters
+  data_bucket: ""
