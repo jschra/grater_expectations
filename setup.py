@@ -24,7 +24,10 @@ setup(
     license=license,
     packages=["."],
     include_package_data=True,
-    entry_points={"console_scripts": ["grater = initialize_project:main_program"],},
+    entry_points={
+        "console_scripts": [
+            "grater = initialize_project:main_program"
+        ],
+    },
     python_requires=">=3.8",
 )
-
