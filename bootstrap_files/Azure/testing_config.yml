@@ -5,6 +5,7 @@ global:
   
 tutorial:
   # -- Azure configurations
+  resource_group_name: "MUST_BE_SET"
   site_storage_container_name: "MUST_BE_SET"
   data_storage_container_name: "MUST_BE_SET"
   container_registry_name: "MUST_BE_SET"
