@@ -561,17 +561,18 @@ ge-data-bucket-name = "{cfg["data_bucket"]}"
 
     elif provider == "Azure":
         # -- 1. Generate Terraform vars for storage
-        document_storage = f"""region = {cfg_global["region"]}
-resource_group_name = {cfg["resource_group_name"]}
-storage_account_name = {cfg["storage_account"]}
-ge_artifact_container = {cfg["artifacts_container_name"]}
+        document_storage = f"""region = "{cfg_global["region"]}"
+resource_group_name = "{cfg["resource_group_name"]}"
+storage_account_name = "{cfg["storage_account"]}"
+ge_artifact_container = "{cfg["artifacts_container_name"]}"
+data_container_name = "{cfg["data_container_name"]}"
         """
 
         # -- 2. Generate Terraform vars for function
-        document_function = f"""resource_group_name = {cfg["resource_group_name"]}
-storage_account_name = {cfg["storage_account"]}
-app_service_name = {cfg["function_name"]}-app-service
-function_name = {cfg["function_name"]}-function
+        document_function = f"""resource_group_name = "{cfg["resource_group_name"]}"
+storage_account_name = "{cfg["storage_account"]}"
+app_service_name = "{cfg["function_name"]}-app-service"
+function_name = "{cfg["function_name"]}-function"
         """
 
         # -- 3. Write files

@@ -20,4 +20,4 @@ tutorial:
   run_name_template: "tutorial run %d-%m-%Y"
 
   # -- Data input parameters
-  data_bucket: ""
+  data_container_name: ""

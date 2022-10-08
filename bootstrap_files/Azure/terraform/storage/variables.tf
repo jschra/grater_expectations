@@ -16,5 +16,10 @@ variable "storage_account_name" {
 
 variable "ge_artifact_container" {
   description = "Name for container to store Great Expectations artifacts in"
-  type = string
+  type        = string
+}
+
+variable "data_container" {
+  description = "Name for container to store data in, if necessary"
+  type        = string
 }

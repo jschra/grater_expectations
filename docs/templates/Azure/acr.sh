@@ -19,10 +19,3 @@ docker tag $DOCKER_IMAGE_NAME:latest $AZURE_CONTAINER_REGISTRY_NAME.azurecr.io/$
 
 # Push Docker image to Azure Container Registry
 docker push $AZURE_CONTAINER_REGISTRY_NAME.azurecr.io/$DOCKER_IMAGE_NAME:latest
-
-# TODO: Authenticate
-# Create Docker container on Azure
-az container create --resource-group $AZURE_RESOURCE_GROUP_NAME --name $DOCKER_CONTAINER_NAME --image $AZURE_CONTAINER_REGISTRY_NAME.azurecr.io/$DOCKER_IMAGE_NAME
-
-# Start Docker container on Azure
-az container start --resource-group $AZURE_RESOURCE_GROUP_NAME --name $DOCKER_CONTAINER_NAME --no-wait
