@@ -76,16 +76,10 @@ def main_program():
 
             # -- Check global config
             global_keys = {
-                "AWS": [
-                    "account_id",
-                    "region",
-                    "provider"
-                ],
-                "Azure": [
-                    "provider",
-                ]
+                "AWS": ["account_id", "region", "provider"],
+                "Azure": ["provider",],
             }
-            
+
             evaluate_global_config(cfg_global, global_keys[provider], "global")
 
             # -- Check project config
@@ -414,11 +408,10 @@ def generate_ge_config(cfg: dict, args, provider: str):
     )
     print(ge_config)
     idx = str(uuid.uuid4())
-    cnx = get_connection_string() if provider == 'Azure' else None
 
     with open(ge_config, "r") as filename:
         template = Template(filename.read())
-        base_yaml = template.render(cfg=cfg, idx=idx, cnx=cnx)
+        base_yaml = template.render(cfg=cfg, idx=idx)
 
     if "great_expectations" not in os.listdir(path):
         os.mkdir(os.path.join(path, "great_expectations"))
@@ -452,7 +445,7 @@ def generate_container_bash_script(cfg: dict, args, cfg_global: dict, provider: 
         "Generating bash script for making docker image and uploading it to a "
         "container registry"
     )
-    if provider == 'AWS':
+    if provider == "AWS":
         path = os.path.join(PROJECT_ROOT, args.name)
         ECR_endpoint = (
             f'{cfg_global["account_id"]}.dkr.ecr.{cfg_global["region"]}.amazonaws.com'
@@ -471,14 +464,15 @@ def generate_container_bash_script(cfg: dict, args, cfg_global: dict, provider: 
             os.path.join(PROJECT_ROOT, args.name, "build_image_store_on_ecr.sh"), "w"
         ) as out:
             out.write(document)
-    
-    if provider == 'Azure':
-        cnx = get_environment()
+
+    if provider == "Azure":
         acr_sh = os.path.join(PACKAGE_ROOT, "docs", "templates", provider, "acr.sh")
-        acr_sh_ouput = os.path.join(PROJECT_ROOT, args.name, "build_image_store_on_acr.sh")
+        acr_sh_ouput = os.path.join(
+            PROJECT_ROOT, args.name, "build_image_store_on_acr.sh"
+        )
         with open(acr_sh, "r") as filename:
             template = Template(filename.read())
-            document = template.render(cnx=cnx, cfg=cfg)
+            document = template.render(cfg=cfg)
         with open(acr_sh_ouput, "w+") as filename:
             filename.write(document)
 

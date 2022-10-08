@@ -1,6 +1,11 @@
+# Local testing
+local_test/*
+local_test
+
 # Node artifact files
 node_modules/
 dist/
+
 
 # Compiled Java class files
 *.class

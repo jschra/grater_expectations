@@ -27,15 +27,13 @@ stores:
       class_name: TupleFilesystemStoreBackend
       container: {{ cfg["data_storage_container_name"] }}
       prefix: expectations
-      connection_string: {{ cnx }}
-
+      
   validations_store:
       class_name: ValidationsStore
       store_backend:
           class_name: TupleFilesystemStoreBackend
           container: {{ cfg["data_storage_container_name"] }}
           prefix: validations
-          connection_string: {{ cnx }}
 
   checkpoint_store:
     class_name: CheckpointStore
@@ -43,7 +41,6 @@ stores:
       class_name: TupleFilesystemStoreBackend
       container: {{ cfg["data_storage_container_name"] }}
       prefix: checkpoint
-      connection_string: {{ cnx }}
 
   profiler_store:
     class_name: ProfilerStore
@@ -51,7 +48,6 @@ stores:
       class_name: TupleFilesystemStoreBackend
       container: {{ cfg["data_storage_container_name"] }}
       prefix: profiler
-      connection_string: {{ cnx }}
 
 data_docs_sites:
     class_name: SiteBuilder
@@ -59,7 +55,6 @@ data_docs_sites:
     store_backend:
        class_name: TupleAzureBlobStoreBackend
        container: {{ cfg["site_storage_container_name"] }}
-       connection_string: {{ cnx }}
     site_index_builder:
       class_name: DefaultSiteIndexBuilder
 

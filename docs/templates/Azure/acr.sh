@@ -3,9 +3,6 @@
 # Set environment variables
 DOCKER_IMAGE_NAME={{ cfg["docker_image_name"] }}
 AZURE_CONTAINER_REGISTRY_NAME={{ cfg["container_registry_name"] }}
-AZURE_CLIENT_ID={{ cnx["AZURE_CLIENT_ID"] }}
-AZURE_CLIENT_SECRET={{ cnx["AZURE_CLIENT_SECRET"] }}
-AZURE_TENANT_ID={{ cnx["AZURE_TENANT_ID"] }}
 AZURE_RESOURCE_GROUP_NAME={{ cfg["resource_group_name"] }}
 
 # Login to Azure
