@@ -1,4 +1,33 @@
-# Placeholder
+# This is the configuration file that can be used to bootstrap files for your Grater
+# Expectations project for Azure.
+
+# For the overall project, there are global configurations which contain:
+# - provider: the cloud provider for which the config was initialized. Set to Azure
+# - region: the region used on Azure to deploy resources
+
+# For each project, the following parameters can be found:
+# - resource_group_name: Name of the resource group to use for your project
+# - storage_account: Name of the storage account wherein containers will be deployed for
+#   storing data (can only be lowercase letters and numbers)
+# - artifacts_container_name: Name of the container that will be used to store Great Expectations artifacts in
+# - function_name: Name used for the testing Azure function to deploy (also used for name of app service)
+# - container_registry_name: Name of the Azure Container Registry that will be provisioned
+#   to push Docker image of Azure function towards
+# - docker_image_name: the name that will be used for the docker image
+
+# - site_name: the name that should be given to the rendered website
+# - expectations_suite_name: the name for the expectation suite you will generate (
+#   an expectations suite is GE yargon for a bundle of expectations you will use to validate
+#   a dataset)
+# - checkpoint_name: name for the checkpoint that will be used to validate your dataset
+#   at runtime. Checkpoints are used to bundle expectation suites with data to
+#   validate at runtime
+# - run_name_template: the template to be used to tag validation runs with. If given
+#   date string formats, these will be rendered at runtime using the date at runtime
+
+# - data_container_name: The name of the container in which the data resides
+
+# NOTE: for storage account names, only use lowercase letters and numbers and ensure their names are globally unique
 
 global:
   provider: "Azure"
