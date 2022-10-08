@@ -588,35 +588,22 @@ def adjust_for_tutorial(args, provider: str):
     logger.info("Making adjustments for running the tutorial")
     if args.name == "tutorial":
         # -- 1. Add tutorial Terraform files
-        # -- .1 Buckets
-        orig = os.path.join(
-            PACKAGE_ROOT,
-            "bootstrap_files",
-            provider,
-            "tutorial_files",
-            "terraform",
-            "tutorial_bucket",
+        path_terraform_tutorial = os.path.join(
+            PACKAGE_ROOT, "bootstrap_files", provider, "tutorial_files", "terraform"
         )
-        dest = os.path.join(PROJECT_ROOT, args.name, "terraform", "buckets")
-        for tutorial_file in os.listdir(orig):
-            shutil.copy2(
-                os.path.join(orig, tutorial_file), os.path.join(dest, tutorial_file)
-            )
+        sub_directories = os.listdir(path_terraform_tutorial)
+        for sub_dir in sub_directories:
+            # -- .1 Set originating subdir
+            orig = os.path.join(path_terraform_tutorial, sub_dir)
 
-        # # -- .2 Lambda
-        orig = os.path.join(
-            PACKAGE_ROOT,
-            "bootstrap_files",
-            provider,
-            "tutorial_files",
-            "terraform",
-            "tutorial_lambda",
-        )
-        dest = os.path.join(PROJECT_ROOT, args.name, "terraform", "lambda")
-        for tutorial_file in os.listdir(orig):
-            shutil.copy2(
-                os.path.join(orig, tutorial_file), os.path.join(dest, tutorial_file)
-            )
+            # -- .2 Construct target subdir
+            dest = os.path.join(PROJECT_ROOT, args.name, "terraform", sub_dir)
+
+            # -- .3 Copy file
+            for tutorial_file in os.listdir(orig):
+                shutil.copy2(
+                    os.path.join(orig, tutorial_file), os.path.join(dest, tutorial_file)
+                )
 
         # # -- 2. Add tutorial data
         orig = os.path.join(PACKAGE_ROOT, "bootstrap_files", "tutorial_data")
@@ -631,19 +618,21 @@ def adjust_for_tutorial(args, provider: str):
             "tutorial_files",
             "tutorial_notebook.ipynb",
         )
+
         dest = os.path.join(PROJECT_ROOT, args.name, "tutorial_notebook.ipynb")
         shutil.copy2(orig, dest)
         os.remove(os.path.join(PROJECT_ROOT, args.name, "expectation_suite.ipynb"))
 
         # # -- 4. Replace lambda function
+        function_mapping = {"AWS": "lambda_function.py", "Azure": "function.py"}
         orig = os.path.join(
             PACKAGE_ROOT,
             "bootstrap_files",
             provider,
             "tutorial_files",
-            "lambda_function.py",
+            function_mapping[provider],
         )
-        dest = os.path.join(PROJECT_ROOT, args.name, "lambda_function.py")
+        dest = os.path.join(PROJECT_ROOT, args.name, function_mapping[provider])
         shutil.copy2(orig, dest)
 
 
