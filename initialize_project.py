@@ -569,7 +569,7 @@ ge_artifact_container = {cfg["artifacts_container_name"]}
 
         # -- 2. Generate Terraform vars for function
         document_function = f"""resource_group_name = {cfg["resource_group_name"]}
-storage_account_name = {cfg["ge_artifacts_container_name"]}
+storage_account_name = {cfg["artifacts_container_name"]}
 app_service_name = {cfg["function_name"]}-app-service
 function_name = {cfg["function_name"]}-function
         """
