@@ -523,11 +523,12 @@ def generate_terraform_var_files(cfg: dict, args, cfg_global: dict, provider: st
     provider : str
         Selected cloud provider that Grater Expectations should be configured for
     """
+    logger.info("Creating Terraform variable configuration files")
+    path = os.path.join(PROJECT_ROOT, args.name,)
+
     if provider == "AWS":
-        logger.info("Creating Terraform variable configuration files")
         # -- 1. Generate Terraform vars for buckets
         # TODO: replace w/ template
-        path = os.path.join(PROJECT_ROOT, args.name,)
         document_buckets = f"""ge-bucket-name      = "{cfg["store_bucket"]}"
 ge-site-bucket-name = "{cfg["site_bucket"]}"
 ge-data-bucket-name = "{cfg["data_bucket"]}"
@@ -542,23 +543,50 @@ ge-data-bucket-name = "{cfg["data_bucket"]}"
         document_lambda = document_buckets + f"image_uri = {image_uri}"
 
         # -- 3. Write files
-        paths_out = [
-            os.path.join(
-                PROJECT_ROOT,
-                args.name,
-                "terraform",
-                "buckets",
-                f"{args.name}.auto.tfvars",
-            ),
-            os.path.join(
-                PROJECT_ROOT,
-                args.name,
-                "terraform",
-                "lambda",
-                f"{args.name}.auto.tfvars",
-            ),
-        ]
+        paths_out = []
+        for target in ["buckets", "lambda"]:
+            paths_out.append(
+                os.path.join(
+                    PROJECT_ROOT,
+                    args.name,
+                    "terraform",
+                    target,
+                    f"{args.name}.auto.tfvars",
+                )
+            )
+
         for path, doc in zip(paths_out, [document_buckets, document_lambda]):
+            with open(path, "w") as out:
+                out.write(doc)
+
+    elif provider == "Azure":
+        # -- 1. Generate Terraform vars for storage
+        document_storage = f"""region = {cfg["region"]}
+        resource_group_name = {cfg["resource_group_name"]}
+storage_account_name = {cfg["ge_artifacts_container_name"]}
+        """
+
+        # -- 2. Generate Terraform vars for function
+        document_function = f"""resource_group_name = {cfg["resource_group_name"]}
+storage_account_name = {cfg["ge_artifacts_container_name"]}
+app_service_name = {cfg["function_name"]}-app-service
+function_name = {cfg["function_name"]}-function
+        """
+
+        # -- 3. Write files
+        paths_out = []
+        for target in ["storage", "function"]:
+            paths_out.append(
+                os.path.join(
+                    PROJECT_ROOT,
+                    args.name,
+                    "terraform",
+                    target,
+                    f"{args.name}.auto.tfvars",
+                )
+            )
+
+        for path, doc in zip(paths_out, [document_storage, document_function]):
             with open(path, "w") as out:
                 out.write(doc)
 

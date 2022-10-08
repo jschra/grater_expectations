@@ -2,12 +2,13 @@
 
 global:
   provider: "Azure"
-  
+  region: "MUST_BE_SET"
+
 tutorial:
   # -- Azure configurations
   resource_group_name: "MUST_BE_SET"
-  site_storage_container_name: "MUST_BE_SET"
-  data_storage_container_name: "MUST_BE_SET"
+  ge_artifacts_container_name: "MUST_BE_SET"
+  function_name: "MUST_BE_SET"
   container_registry_name: "MUST_BE_SET"
   docker_image_name: tutorial_image
 
