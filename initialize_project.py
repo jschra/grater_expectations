@@ -561,8 +561,8 @@ ge-data-bucket-name = "{cfg["data_bucket"]}"
 
     elif provider == "Azure":
         # -- 1. Generate Terraform vars for storage
-        document_storage = f"""region = {cfg["region"]}
-        resource_group_name = {cfg["resource_group_name"]}
+        document_storage = f"""region = {cfg_global["region"]}
+resource_group_name = {cfg["resource_group_name"]}
 storage_account_name = {cfg["ge_artifacts_container_name"]}
 ge_artifact_container = {cfg["artifacts_container_name"]}
         """
