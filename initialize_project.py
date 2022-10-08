@@ -564,6 +564,7 @@ ge-data-bucket-name = "{cfg["data_bucket"]}"
         document_storage = f"""region = {cfg["region"]}
         resource_group_name = {cfg["resource_group_name"]}
 storage_account_name = {cfg["ge_artifacts_container_name"]}
+ge_artifact_container = {cfg["artifacts_container_name"]}
         """
 
         # -- 2. Generate Terraform vars for function

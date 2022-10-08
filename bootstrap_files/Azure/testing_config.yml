@@ -7,7 +7,8 @@ global:
 tutorial:
   # -- Azure configurations
   resource_group_name: "MUST_BE_SET"
-  ge_artifacts_container_name: "MUST_BE_SET"
+  storage_account: "MUST_BE_SET"
+  artifacts_container_name: "MUST_BE_SET"
   function_name: "MUST_BE_SET"
   container_registry_name: "MUST_BE_SET"
   docker_image_name: tutorial_image

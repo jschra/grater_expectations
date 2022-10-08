@@ -13,3 +13,8 @@ variable "storage_account_name" {
   description = "Name of the storage account to deploy"
   type        = string
 }
+
+variable "ge_artifact_container" {
+  description = "Name for container to store Great Expectations artifacts in"
+  type = string
+}

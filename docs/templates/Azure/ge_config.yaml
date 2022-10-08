@@ -25,28 +25,28 @@ stores:
     class_name: ExpectationsStore
     store_backend:
       class_name: TupleAzureBlobStoreBackend
-      container: {{ cfg["ge_artifacts_container_name"] }}
+      container: {{ cfg["artifacts_container_name"] }}
       prefix: expectations
 
   validations_store:
       class_name: ValidationsStore
       store_backend:
           class_name: TupleAzureBlobStoreBackend
-          container: {{ cfg["ge_artifacts_container_name"] }}
+          container: {{ cfg["artifacts_container_name"] }}
           prefix: validations
 
   checkpoint_store:
     class_name: CheckpointStore
     store_backend:
       class_name: TupleAzureBlobStoreBackend
-      container: {{ cfg["ge_artifacts_container_name"] }}
+      container: {{ cfg["artifacts_container_name"] }}
       prefix: checkpoint
 
   profiler_store:
     class_name: ProfilerStore
     store_backend:
       class_name: TupleAzureBlobStoreBackend
-      container: {{ cfg["ge_artifacts_container_name"] }}
+      container: {{ cfg["artifacts_container_name"] }}
       prefix: profiler
 
 data_docs_sites:
@@ -54,7 +54,7 @@ data_docs_sites:
     show_how_to_buttons: true
     store_backend:
        class_name: TupleAzureBlobStoreBackend
-       container: {{ cfg["ge_artifacts_container_name"] }}
+       container: \$web
     site_index_builder:
       class_name: DefaultSiteIndexBuilder
 

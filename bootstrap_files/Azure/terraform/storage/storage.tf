@@ -19,12 +19,12 @@ resource "azurerm_storage_account" "this" {
   }
 }
 
-# -------------------------------------------------------------
-# Containers
-# ------------------------------------------------------------- 
+-------------------------------------------------------------
+Containers
+------------------------------------------------------------- 
 
-# resource "azurerm_storage_container" "ge_artifacts" {
-#   name                  = var.ge_artifact_container
-#   storage_account_name  = azurerm_storage_account.this.name
-#   container_access_type = "private"
-# }
+resource "azurerm_storage_container" "ge_artifacts" {
+  name                  = var.ge_artifact_container
+  storage_account_name  = azurerm_storage_account.this.name
+  container_access_type = "private"
+}
