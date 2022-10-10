@@ -46,7 +46,7 @@ stores:
       container: {{ cfg["artifacts_container_name"] }}
       prefix: profiler
 data_docs_sites:
-  {{cfg["site_name"]}}
+  {{cfg["site_name"]}}:
     class_name: SiteBuilder
     show_how_to_buttons: true
     store_backend:

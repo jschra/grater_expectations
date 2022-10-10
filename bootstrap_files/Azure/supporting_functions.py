@@ -146,14 +146,12 @@ def add_connection_string_to_config(
 
     # -- 2. Add connection strings to stores
     for store in STORES_TO_ADJUST:
-        sub_dict = data["stores"][store]["store_backend"]
-        # if "connection_string" not in sub_dict.keys():
-        sub_dict["connection_string"] = connection_string
+        data["stores"][store]["store_backend"]["connection_string"] = connection_string
 
     # -- 3. Add connection string to Data Docs
-    sub_dict = data["data_docs_sites"][test_config.site_name]["store_backend"]
-    # if "connection_string" not in sub_dict.keys():
-    sub_dict["connection_string"] = connection_string
+    data["data_docs_sites"][test_config.site_name]["store_backend"][
+        "connection_string"
+    ] = connection_string
 
     # -- 4. Write back to config
     with open(path_config, "w") as file_out:
