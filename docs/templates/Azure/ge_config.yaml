@@ -21,35 +21,32 @@ checkpoint_store_name: checkpoint_store
 profiler_store_name: profiler_store
         
 stores:
-  expectations_store_name:
+  expectations_store:
     class_name: ExpectationsStore
     store_backend:
       class_name: TupleAzureBlobStoreBackend
       container: {{ cfg["artifacts_container_name"] }}
       prefix: expectations
-
   validations_store:
       class_name: ValidationsStore
       store_backend:
           class_name: TupleAzureBlobStoreBackend
           container: {{ cfg["artifacts_container_name"] }}
           prefix: validations
-
   checkpoint_store:
     class_name: CheckpointStore
     store_backend:
       class_name: TupleAzureBlobStoreBackend
       container: {{ cfg["artifacts_container_name"] }}
       prefix: checkpoint
-
   profiler_store:
     class_name: ProfilerStore
     store_backend:
       class_name: TupleAzureBlobStoreBackend
       container: {{ cfg["artifacts_container_name"] }}
       prefix: profiler
-
 data_docs_sites:
+  {{cfg["site_name"]}}
     class_name: SiteBuilder
     show_how_to_buttons: true
     store_backend:

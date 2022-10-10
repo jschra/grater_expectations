@@ -15,12 +15,12 @@ data "azurerm_container_registry" "this" {
 }
 
 # Get random ID to ensure globally unique function name
-resource "random_id" "bucket" {
+resource "random_id" "storage" {
   byte_length = 8
 }
 
 resource "azurerm_storage_account" "function" {
-  name                     = "graterfuncstorage${random_id.bucket.dec}"
+  name                     = substr("graterfuncstorage${random_id.storage.dec}", 0, 24)
   resource_group_name      = data.azurerm_resource_group.this.name
   location                 = data.azurerm_resource_group.this.location
   account_tier             = "Standard"
