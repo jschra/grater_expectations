@@ -14,8 +14,13 @@ data "azurerm_container_registry" "this" {
   resource_group_name = data.azurerm_resource_group.this.name
 }
 
+# Get random ID to ensure globally unique function name
+resource "random_id" "bucket" {
+  byte_length = 8
+}
+
 resource "azurerm_storage_account" "function" {
-  name                     = "grater-function-storage"
+  name                     = "graterfuncstorage${random_id.bucket.dec}"
   resource_group_name      = data.azurerm_resource_group.this.name
   location                 = data.azurerm_resource_group.this.location
   account_tier             = "Standard"

@@ -1,5 +1,5 @@
 {
-  "scriptFile": "__init__.py",
+  "scriptFile": "function.py",
   "bindings": [
     {
       "authLevel": "function",
