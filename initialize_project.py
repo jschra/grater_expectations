@@ -1,6 +1,5 @@
 from version import __version__
 from argparse import ArgumentParser
-from azure_helpers import get_connection_string, get_environment
 from jinja2 import Template
 import os
 import shutil
@@ -561,19 +560,23 @@ ge-data-bucket-name = "{cfg["data_bucket"]}"
 
     elif provider == "Azure":
         # -- 1. Generate Terraform vars for storage
+        # TODO: refactor to template
         document_storage = f"""region = "{cfg_global["region"]}"
 resource_group_name = "{cfg["resource_group_name"]}"
 storage_account_name = "{cfg["storage_account"]}"
 ge_artifact_container = "{cfg["artifacts_container_name"]}"
 data_container = "{cfg["data_container_name"]}"
-        """
+"""
 
         # -- 2. Generate Terraform vars for function
+        # TODO: refactor to template
         document_function = f"""resource_group_name = "{cfg["resource_group_name"]}"
 storage_account_name = "{cfg["storage_account"]}"
 app_service_name = "{cfg["function_name"]}-app-service"
 function_name = "{cfg["function_name"]}-function"
-        """
+docker_image_name = "{cfg["docker_image_name"]}"
+container_registry_name = "{cfg["container_registry_name"]}"
+"""
 
         # -- 3. Write files
         paths_out = []
