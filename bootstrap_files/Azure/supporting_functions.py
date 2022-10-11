@@ -204,6 +204,7 @@ def add_connection_string_to_config(
         "validations_store",
         "checkpoint_store",
         "profiler_store",
+        "evaluation_parameter_store",
     ]
 
     # -- 1. Initialize yaml and open file

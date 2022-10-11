@@ -9,7 +9,6 @@
 # - resource_group_name: Name of the resource group to use for your project
 # - storage_account: Name of the storage account wherein containers will be deployed for
 #   storing data (can only be lowercase letters and numbers)
-# - artifacts_container_name: Name of the container that will be used to store Great Expectations artifacts in
 # - function_name: Name used for the testing Azure function to deploy (also used for name of app service)
 # - container_registry_name: Name of the Azure Container Registry that will be provisioned
 #   to push Docker image of Azure function towards
@@ -37,7 +36,6 @@ tutorial:
   # -- Azure configurations
   resource_group_name: "MUST_BE_SET"
   storage_account: "MUST_BE_SET" # Must be lowercase letters and numbers, max length 24
-  artifacts_container_name: "MUST_BE_SET" # Must be lowercase letters and numbers, max lenght 24
   function_name: "MUST_BE_SET"
   container_registry_name: "MUST_BE_SET" # Must be lowercase letters and numbers
   docker_image_name: tutorial_image
