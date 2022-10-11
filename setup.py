@@ -8,7 +8,7 @@ with open("README.md") as f:
 with open("LICENSE") as f:
     license = f.read()
 
-with open("requirements.txt") as f:
+with open("requirements_azure.txt") as f:
     requirements = f.read().splitlines()
 
 setup(
