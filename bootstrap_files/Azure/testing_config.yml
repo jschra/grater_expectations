@@ -37,7 +37,7 @@ tutorial:
   # -- Azure configurations
   resource_group_name: "MUST_BE_SET"
   storage_account: "MUST_BE_SET" # Must be lowercase letters and numbers, max length 24
-  artifacts_container_name: "MUST_BE_SET"
+  artifacts_container_name: "MUST_BE_SET" # Must be lowercase letters and numbers, max lenght 24
   function_name: "MUST_BE_SET"
   container_registry_name: "MUST_BE_SET" # Must be lowercase letters and numbers
   docker_image_name: tutorial_image
