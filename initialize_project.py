@@ -568,7 +568,6 @@ ge-data-bucket-name = "{cfg["data_bucket"]}"
         document_storage = f"""region = "{cfg_global["region"]}"
 resource_group_name = "{cfg["resource_group_name"]}"
 storage_account_name = "{cfg["storage_account"]}"
-ge_artifact_container = "{cfg["artifacts_container_name"]}"
 data_container = "{cfg["data_container_name"]}"
 """
 

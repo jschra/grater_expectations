@@ -23,8 +23,14 @@ resource "azurerm_storage_account" "this" {
 # Containers
 # ------------------------------------------------------------- 
 
-resource "azurerm_storage_container" "ge_artifacts" {
-  name                  = var.ge_artifact_container
+locals {
+  ge_containers = ["expectations", "validations", "checkpoints", "profiler", "evaluations"]
+}
+
+resource "azurerm_storage_container" "this" {
+  for_each = toset(local.ge_containers)
+
+  name                  = each.key
   storage_account_name  = azurerm_storage_account.this.name
   container_access_type = "private"
 }
