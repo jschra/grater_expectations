@@ -1,3 +1,4 @@
+# Imports
 import logging
 from ruamel import yaml
 import os
@@ -6,6 +7,9 @@ import great_expectations as ge
 from IPython.display import display, HTML
 from ruamel.yaml import YAML
 from azure.mgmt.storage import StorageManagementClient
+from azure.storage.blob import BlobServiceClient
+from io import StringIO
+import pandas as pd
 
 
 # Logger initialization and function for lambda
@@ -71,6 +75,69 @@ def copy_tf_env_vars_for_az():
             )
             logging.error(message)
             raise error
+
+
+# Functions for interacting with containers and blobs
+def get_file_keys_from_container(
+    blob_service_client: BlobServiceClient, container_name: str
+) -> list:
+    """Function to get a list of all blobs in a container, given an instantiated
+    BlobServiceClient for the storage account to target and a name of a container
+    within it
+
+    Parameters
+    ----------
+    blob_service_client : BlobServiceClient
+        BlobServiceClient for the storage account to target. Must be authenticated and
+        allowed to access and interact with containers
+    container_name : str
+        Name of the container to get a list of blobs from
+
+    Returns
+    -------
+    list
+        List of blobs residing in the container provided at runtime
+    """
+    # -- Initiate client, pull blobs and return blob paths
+    container_client = blob_service_client.get_container_client(container_name)
+    list_blobs = [blob.name for blob in container_client.list_blobs()]
+
+    return list_blobs
+
+
+def load_csv_from_container(
+    blob_service_client: BlobServiceClient, container_name: str, path_csv: str
+) -> pd.DataFrame:
+    """Function that downloads a CSV from a container in an Azure storage account and
+    returns it as a pandas DataFrame
+
+    Parameters
+    ----------
+    blob_service_client : BlobServiceClient
+        BlobServiceClient for the storage account to target. Must be authenticated and
+        allowed to access and interact with containers
+    container_name : str
+        Name of the container to get a list of blobs from
+    path_csv : str
+        Path to the CSV file in the container (can be obtained by calling 
+        get_file_keys_from_container)
+
+    Returns
+    -------
+    pd.DataFrame
+        The downloaded CSV file as a pandas DataFrame in memory
+    """
+
+    # -- 1. Initiate blob client and download blob
+    blob_client = blob_service_client.get_blob_client(
+        container=container_name, blob=path_csv
+    )
+    downloaded_blob = blob_client.download_blob()
+
+    # -- 2. Read incoming stream as pandas DataFrame
+    df = pd.read_csv(StringIO(downloaded_blob.content_as_text()))
+
+    return df
 
 
 # Helper functions for Great Expectations config for Azure

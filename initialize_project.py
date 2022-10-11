@@ -344,7 +344,11 @@ def generate_project_files(args, provider: str):
         from_path=from_path,
         to_path=to_path,
         ignore_pattern=shutil.ignore_patterns(
-            "__init__*", "non_verbose_files", "tutorial_files", "testing_config.yml"
+            "__init__*",
+            "non_verbose_files",
+            "tutorial_files",
+            "testing_config.yml",
+            "__pycache__",
         ),
     )
 
