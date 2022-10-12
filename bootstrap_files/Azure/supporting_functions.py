@@ -311,14 +311,10 @@ def generate_link_in_notebook(url: str):
 def generate_ge_site_link(build_data_docs_output: dict) -> str:
     """Helper function to create URL to GE Data Docs website using
     context.build_data_docs() output"""
-    url_components = build_data_docs_output[
-        list(build_data_docs_output.keys())[0]
-    ].split("/")
-    url_start = "http://" + url_components[3]
-    site_name_parts = url_components[2].split("-")
-    site_name = "-".join([site_name_parts[0], "website", "-".join(site_name_parts[1:])])
-    s3_url = ".".join([url_start, site_name]) + "/"
-    return s3_url
+    url_raw = build_data_docs_output[list(build_data_docs_output.keys())[0]]
+    url_output = url_raw.replace(".blob.", ".z6.web.").replace("/$web/index.html", "")
+
+    return url_output
 
 
 def print_ge_site_link(build_data_docs_output: dict):
