@@ -659,8 +659,8 @@ def adjust_for_tutorial(args, provider: str):
         shutil.copy2(orig, dest)
         os.remove(os.path.join(PROJECT_ROOT, args.name, "expectation_suite.ipynb"))
 
-        # # -- 4. Replace lambda function
-        function_mapping = {"AWS": "lambda_function.py", "Azure": "function.py"}
+        # # -- 4. Replace lambda function or Azure function directory
+        function_mapping = {"AWS": "lambda_function.py", "Azure": "function"}
         orig = os.path.join(
             PACKAGE_ROOT,
             "bootstrap_files",
@@ -669,8 +669,12 @@ def adjust_for_tutorial(args, provider: str):
             function_mapping[provider],
         )
         dest = os.path.join(PROJECT_ROOT, args.name, function_mapping[provider])
-        shutil.copy2(orig, dest)
 
+        if provider == "AWS":
+            shutil.copy2(orig, dest)
+        elif provider == "Azure":
+            copy_and_overwrite_tree(orig, dest)
+            
 
 def start_notebook(args, notebook_name: str = "expectation_suite"):
     """Helper function to open up the expectation_suite.ipynb notebook upon
