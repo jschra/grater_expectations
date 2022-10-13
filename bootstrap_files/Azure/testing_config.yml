@@ -47,4 +47,4 @@ tutorial:
   run_name_template: "tutorial run %d-%m-%Y"
 
   # -- Data input parameters
-  data_container_name: ""
+  data_container_name: "" # Must be set if you are running the tutorial
