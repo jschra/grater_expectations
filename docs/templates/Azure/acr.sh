@@ -14,7 +14,7 @@ az acr login --name {{cfg["container_registry_name"]}}
 # Build Docker image locally, pass Service Principal credentials
 docker build -t {{cfg["docker_image_name"]}} \
 --build-arg AZURE_CLIENT_SECRET=${ARM_CLIENT_SECRET} \
---build-arg AZURE_TENANT_ID=${ARM_TENANT_ID} \
+--build-arg AZURE_CLIENT_ID=${ARM_CLIENT_ID} \
 --build-arg AZURE_SUBSCRIPTION_ID=${ARM_SUBSCRIPTION_ID} \
 --build-arg AZURE_TENANT_ID=${ARM_TENANT_ID} \
 .
