@@ -8,7 +8,7 @@ with open("README.md") as f:
 with open("LICENSE") as f:
     license = f.read()
 
-with open("requirements_azure.txt") as f:
+with open("requirements.txt") as f:
     requirements = f.read().splitlines()
 
 setup(
@@ -24,10 +24,6 @@ setup(
     license=license,
     packages=["."],
     include_package_data=True,
-    entry_points={
-        "console_scripts": [
-            "grater = initialize_project:main_program"
-        ],
-    },
+    entry_points={"console_scripts": ["grater = initialize_project:main_program"],},
     python_requires=">=3.8",
 )
