@@ -7,7 +7,7 @@ resource "random_uuid" "force_refresh" {
 
 resource "aws_lambda_function" "validation_lambda" {
   function_name    = "grater_expectations_validation_tutorial"
-  role             = aws_iam_role.validation_lamnbda_role.arn
+  role             = aws_iam_role.validation_lambda_role.arn
   image_uri        = var.image_uri
   package_type     = "Image"
   memory_size      = 1024

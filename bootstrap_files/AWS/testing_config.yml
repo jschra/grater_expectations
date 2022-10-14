@@ -43,7 +43,7 @@ tutorial:
   store_bucket_prefix: ""
   site_bucket: "MUST_BE_SET"
   site_bucket_prefix: ""
-  docker_image_name: tutorial_image
+  docker_image_name: "tutorial_image"
 
   # -- Great expectations parameters
   site_name: "Tutorial expectations"
