@@ -1,6 +1,3 @@
-[![Watch on GitHub](https://img.shields.io/github/watchers/jonsn0w/hyde.svg?style=social)](https://github.com/jonsn0w/Hyde/watchers)
-[![Star on GitHub](https://img.shields.io/github/stars/jonsn0w/hyde.svg?style=social)](https://github.com/jonsn0w/hyde/stargazers)
-
 # Grater Expectations
 
 ![grater_expectations](./docs/images/grater_expectations_background.png)
@@ -13,4 +10,4 @@ In this project a combination of Python, Docker, Terraform and Azure or AWS serv
 For more information on how to get started, please refer to the README file specific for the cloud provider you intend to use:
 
 - [Azure](./README_AZURE.md)
--[AWS](./README_AWS.md)
+- [AWS](./README_AWS.md)
