@@ -1,4 +1,4 @@
-# Grater Expectations
+# Grater Expectations on AWS
 
 ![grater_expectations](./docs/images/grater_expectations_background.png)
 
