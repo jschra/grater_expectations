@@ -330,4 +330,4 @@ Next, open the `testing_config.yml` configuration file and fill in the following
 
 Example values for these can be found under the [Creating a new project](#creating-a-new-project) section. You can use the default values for the other parameters. 
 
-After doing so, you can initialize the tutorial on your local machine by calling `grater create project --name tutorial` at the root of this repository. The files for the tutorial will then automatically be generated, after which a tutorial notebook will be opened for you.
+After doing so, you can initialize the tutorial on your local machine by calling `grater create project --name tutorial` at the root of your project directory. The files for the tutorial will then automatically be generated, after which a tutorial notebook will be opened for you.
