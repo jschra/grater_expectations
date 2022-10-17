@@ -118,7 +118,7 @@ conda install grater_expectations
 When you want to develop a new set of tests for a specific dataset, you first need to create new configuration for your project. This can be done by running the following command:
 
 ```bash
-grater create config
+grater create config --provider AWS
 ```
 
 It will create a `testing_config.yml` file at the root of your current directory. Within this file, you need to change the config parameters before you can generate project files.
@@ -126,6 +126,7 @@ It will create a `testing_config.yml` file at the root of your current directory
 Nested under the project name (e.g. tutorial), the configuration file is expected to contain the following keys:
 
 **Global parameters**
+- **provider**: provider for which configuration file was initialized (should say AWS)
 - **account_id**: id of the AWS account that can be used to provision services
 - **region**: the region wherein the services should be deployed (if applicable)
 
@@ -309,7 +310,7 @@ Next, make sure that you install Grater Expectations in your (new) virtual envir
 pip install grater_expectations
 
 # Generate a new config file
-grater create config
+grater create config --provider AWS
 ```
 
 <br>
@@ -317,8 +318,9 @@ grater create config
 Next, open the `testing_config.yml` configuration file and fill in the following parameters:
 
 **Global parameters**
-1. account_id
-2. region
+1. Provider (should already be set to AWS)
+2. account_id
+3. region
 
 **Project parameters under tutorial** (these need to be globally unique, so be creative!):
 1. store_bucket
