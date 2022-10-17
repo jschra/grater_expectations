@@ -297,6 +297,7 @@ conda activate grater_expectations
 # -- Set credentials for AWS
 export AWS_ACCESS_KEY_ID=<enter_aws_access_key_here>
 export AWS_SECRET_ACCESS_KEY=<enter_aws_secret_access_key_here>
+export AWS_SESSION_TOKEN=<enter_aws_session_token_here> # If using AWS SSO
 ```
 
 <br>
