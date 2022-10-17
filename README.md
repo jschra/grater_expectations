@@ -11,4 +11,4 @@ In this project a combination of Python, Docker, Terraform and Azure or AWS serv
 For more information on how to get started, please refer to the README file specific for the cloud provider you intend to use:
 
 - [Azure](https://github.com/jschra/grater_expectations/blob/main/README_AZURE.md)
-- [AWS]((https://github.com/jschra/grater_expectations/blob/main/README_AWS.md))
+- [AWS](https://github.com/jschra/grater_expectations/blob/main/README_AWS.md)
