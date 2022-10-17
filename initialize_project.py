@@ -8,15 +8,17 @@ import uuid
 import logging
 
 
+# Constants
 PACKAGE_ROOT = os.path.dirname(__file__)
 PROJECT_ROOT = os.path.abspath(".")
 CONFIGS_FILE = "testing_config.yml"
+SUPPORTED_PROVIDERS = ["AWS", "Azure"]
 
 # Logger
 logging.basicConfig(
     level=logging.DEBUG,
     datefmt="%Y-%m-%d %H:%M:%S",
-    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+    format="%(asctime)s - %(levelname)s - %(name)s - %(funcName)s - %(message)s",
 )
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -24,27 +26,26 @@ logger.setLevel(logging.INFO)
 
 def main_program():
     # -- 1. Parse arguments passed at runtime from terminal
-    logger.info("Parsing command line arguments")
-    parser = ArgumentParser()
-    parser.add_argument("-v", "--version", action="version", version=__version__)
-    subparsers = parser.add_subparsers()
-
-    create = subparsers.add_parser("create")
-    create_subparsers = create.add_subparsers(dest="create")
-
-    create_cnf = create_subparsers.add_parser("config")
-
-    create_prj = create_subparsers.add_parser("project")
-    create_prj.add_argument("-n", "--name", type=str, required=True)
-    create_prj.add_argument("-nv", "--nonverbose", action="store_true")
-
+    parser = initialize_parser()
     args = parser.parse_args()
+    logger.info("Parsing command line arguments")
 
     if args.create == "config":
+        if args.provider not in SUPPORTED_PROVIDERS:
+            raise ValueError(
+                "The selected provider is currently not supported by Grater "
+                "Expectations. Please select one from the following options: "
+                f"{SUPPORTED_PROVIDERS}"
+            )
+
+        logger.info(f"Selected provider is: {args.provider}")
         logger.info(
-            "Creating configuration file testing_config.yml in current directory"
+            f"Creating configuration file testing_config.yml for {args.provider} in "
+            "current directory"
         )
-        src = os.path.join(PACKAGE_ROOT, CONFIGS_FILE)
+
+        _ = check_if_config_exists(PROJECT_ROOT)
+        src = os.path.join(PACKAGE_ROOT, "bootstrap_files", args.provider, CONFIGS_FILE)
         dst = os.path.join(PROJECT_ROOT, CONFIGS_FILE)
         shutil.copy(src, dst)
 
@@ -61,6 +62,7 @@ def main_program():
             # -- Load
             cfg_all = yaml.safe_load(cfg_yaml)
             cfg_global = cfg_all["global"]
+            provider = cfg_global["provider"]
 
             try:
                 cfg = cfg_all[args.name]
@@ -72,23 +74,15 @@ def main_program():
                 raise ke
 
             # -- Check global config
-            global_keys = ["account_id", "region"]
-            evaluate_global_config(cfg_global, global_keys, "global")
+            global_keys = {
+                "AWS": ["account_id", "region", "provider"],
+                "Azure": ["provider",],
+            }
+
+            evaluate_global_config(cfg_global, global_keys[provider], "global")
 
             # -- Check project config
-            project_keys = [
-                "store_bucket",
-                "store_bucket_prefix",
-                "site_bucket",
-                "site_bucket_prefix",
-                "docker_image_name",
-                "site_name",
-                "expectations_suite_name",
-                "checkpoint_name",
-                "run_name_template",
-                "data_bucket",
-                "prefix_data",
-            ]
+            project_keys = get_config_project_keys(provider)
             evaluate_config_keys(cfg, project_keys, args.name)
 
         # -- 3. Check if the project exists and if so, if the user wants to continue. Then,
@@ -97,30 +91,31 @@ def main_program():
         if args.name not in os.listdir():
             os.mkdir(args.name)
 
-        # -- 4. Copy bootstrap files (do this before copying any other files, as it might
-        # overwrite and remove previously copied files)
-        generate_project_files(args)
+        # -- 4. Copy bootstrap files (do this before copying any other files, as it
+        #       might overwrite and remove previously copied files)
+        generate_project_files(args, provider)
 
         # -- 5. Copy configuration
         generate_project_config(cfg, args, cfg_global)
 
         # -- 6. Generate Great Expectations config yml
-        generate_ge_config(cfg, args)
+        generate_ge_config(cfg, args, provider)
 
-        # -- 7. Generate bash script for building Docker image and push to ECR
-        generate_ecr_bash_script(cfg, args, cfg_global)
+        # -- 7. Generate bash script for building Docker image and push to container
+        #       registry
+        generate_container_bash_script(cfg, args, cfg_global, provider)
 
         # -- 8. Generate Terraform var files
-        generate_terraform_var_files(cfg, args, cfg_global)
+        generate_terraform_var_files(cfg, args, cfg_global, provider)
 
-        # -- 9. Add provider.tf in each Terraform directory
-        generate_terraform_provider_config(args, cfg_global)
+        # # -- 9. Add provider.tf in each Terraform directory
+        generate_terraform_provider_config(args, cfg_global, provider)
 
         # -- 10. If tutorial, overwrite files with tutorial equivalents and add
         #       tutorial data
-        adjust_for_tutorial(args)
+        adjust_for_tutorial(args, provider)
 
-        # -- 11. Start testing suite notebook
+        # # -- 11. Start testing suite notebook
         if args.name == "tutorial":
             start_notebook(args, "tutorial_notebook")
         else:
@@ -128,6 +123,100 @@ def main_program():
 
 
 # Functions
+def initialize_parser() -> ArgumentParser:
+    """Function to initialize command line parser for the package
+
+    Returns
+    -------
+    ArgumentParser
+        An initialize argument parser
+    """
+    # -- 1. Create new parser, add (sub-)arguments
+    parser = ArgumentParser(description="CLI for Grater Expectations")
+    parser.add_argument("-v", "--version", action="version", version=__version__)
+    subparsers = parser.add_subparsers()
+
+    # -- .1 Add create subparser
+    create = subparsers.add_parser(
+        "create", help="command to create configs and projects"
+    )
+    create_subparsers = create.add_subparsers(dest="create")
+
+    # -- .2 Add config to create subparser
+    create_cnf = create_subparsers.add_parser("config", help="command to create config")
+    create_cnf.add_argument(
+        "-p",
+        "--provider",
+        metavar="",
+        type=str,
+        required=True,
+        help="Cloud provider to initialize config for",
+    )
+
+    # -- .3 Add project to create subparser
+    create_prj = create_subparsers.add_parser(
+        "project", help="command to create projects"
+    )
+    create_prj.add_argument(
+        "-n", "--name", type=str, required=True, help="name of the project", metavar=""
+    )
+    create_prj.add_argument(
+        "-nv", "--nonverbose", action="store_true", help="option for non-verbose files"
+    )
+
+    return parser
+
+
+def check_if_config_exists(project_root: str, config_name: str = "testing_config.yml"):
+    """Function to check if a configuration file already exists and ensure that the user
+     wants it to be overwritten, if that is the case"""
+    if config_name in os.listdir(project_root):
+        logger.info(
+            f"A Grater Expectations configuration file ({config_name}) already exists "
+            "in this directory. Are you sure you want to initialize a new file and "
+            "overwrite the existing one (y/[n])?"
+        )
+        response = input("Input: ")
+        if response in ["y", "Y", "yes", "Yes", "YES"]:
+            logger.info(f"Overwriting configuration file")
+        else:
+            raise SystemExit("Configuration file already exists, stopping creation")
+
+
+def get_config_project_keys(provider: str) -> list:
+    """Function that returns a list of expected keys in a project configuration,
+    depending on the selected provider
+
+    Parameters
+    ----------
+    provider : str
+        Selected cloud provider that Grater Expectations should be configured for
+
+    Returns
+    -------
+    list
+        A list of expected keys in the project config
+    """
+    if provider == "AWS":
+        project_keys = [
+            "store_bucket",
+            "store_bucket_prefix",
+            "site_bucket",
+            "site_bucket_prefix",
+            "docker_image_name",
+            "site_name",
+            "expectations_suite_name",
+            "checkpoint_name",
+            "run_name_template",
+            "data_bucket",
+            "prefix_data",
+        ]
+    elif provider == "Azure":
+        project_keys = []
+
+    return project_keys
+
+
 def evaluate_config_keys(cfg: dict, list_keys: list, config_name: str):
     """Function to evaluate if the passed configurations contain the required keys to
     bootstrap a new GE project
@@ -234,7 +323,7 @@ def check_if_project_exists(args):
             raise SystemExit("Project already exists, stopping initialization")
 
 
-def generate_project_files(args):
+def generate_project_files(args, provider: str):
     """Function to copy files from bootstrap files directory to project directory,
     potentially using non verbose files if passed as argument through command
     line
@@ -244,34 +333,37 @@ def generate_project_files(args):
     args:
         Command line arguments passed at runtime. Expected to contain --project/-p,
         can also contain --nonverbose/-nv
+    provider : str
+        Selected cloud provider that Grater Expectations should be configured for
     """
     # -- 1. Copy files from bootstrap files
-    from_path = os.path.join(PACKAGE_ROOT, "bootstrap_files")
+    from_path = os.path.join(PACKAGE_ROOT, "bootstrap_files", provider)
     to_path = os.path.join(PROJECT_ROOT, args.name)
 
     copy_and_overwrite_tree(
         from_path=from_path,
         to_path=to_path,
         ignore_pattern=shutil.ignore_patterns(
-            "__init__*", "non_verbose_files", "tutorial_files"
+            "__init__*",
+            "non_verbose_files",
+            "tutorial_files",
+            "testing_config.yml",
+            "__pycache__",
         ),
     )
 
     # -- 2. If nonverbose, get nonverbose files
     if args.nonverbose:
         logger.info("Replacing generated files with non-verbose versions")
-        path = os.path.join(PACKAGE_ROOT, "bootstrap_files", "non_verbose_files")
+        path = os.path.join(
+            PACKAGE_ROOT, "bootstrap_files", provider, "non_verbose_files"
+        )
         for nv_file in os.listdir(path):
             if nv_file == "__pycache__":
                 continue
             orig = os.path.join(path, nv_file)
             dest = os.path.join(to_path, nv_file)
             shutil.copy2(orig, dest)
-
-    # -- 3. Copy requirements.txt
-    orig = os.path.join(PACKAGE_ROOT, "requirements.txt")
-    dest = os.path.join(PROJECT_ROOT, args.name, "requirements.txt")
-    shutil.copy2(orig, dest)
 
 
 def generate_project_config(cfg: dict, args, cfg_global: dict = None):
@@ -299,7 +391,7 @@ def generate_project_config(cfg: dict, args, cfg_global: dict = None):
         project_yaml.write(doc_out)
 
 
-def generate_ge_config(cfg: dict, args):
+def generate_ge_config(cfg: dict, args, provider: str):
     """Function to generate a configuration file for Great Expectations, using arguments
     passed through a config in cfg and command line arguments in args
 
@@ -308,18 +400,22 @@ def generate_ge_config(cfg: dict, args):
     cfg : dict
         Project config containing required elements to generate the GE configuration file
     args:
-        Command line arguments passed at runtime. Expected to contain --project/-p
+        Command line arguments passed at runtime. Expected to contain a .name attribute
+    provider : str
+        Selected cloud provider that Grater Expectations should be configured for
     """
     logger.info("Generating Great Expectations configuration file")
     path = os.path.join(PROJECT_ROOT, args.name)
-    ge_config = os.path.join(PACKAGE_ROOT, "docs", "templates", "ge_config.yaml")
+    ge_config = os.path.join(
+        PACKAGE_ROOT, "docs", "templates", provider, "ge_config.yaml"
+    )
+    print(ge_config)
     idx = str(uuid.uuid4())
 
     with open(ge_config, "r") as filename:
         template = Template(filename.read())
         base_yaml = template.render(cfg=cfg, idx=idx)
 
-    print(os.listdir(path))
     if "great_expectations" not in os.listdir(path):
         os.mkdir(os.path.join(path, "great_expectations"))
 
@@ -332,7 +428,7 @@ def generate_ge_config(cfg: dict, args):
         out.write(base_yaml)
 
 
-def generate_ecr_bash_script(cfg: dict, args, cfg_global: dict):
+def generate_container_bash_script(cfg: dict, args, cfg_global: dict, provider: str):
     """Function to generate a bash script to create a docker image and push it to ECR,
     using arguments from configs in cfg and cfg_global and command line arguments in args
 
@@ -345,44 +441,62 @@ def generate_ecr_bash_script(cfg: dict, args, cfg_global: dict):
     cfg_global : dict
         Config containing required global elements (AWS account and region) to generate
         the GE configuration file
+    provider : str
+        Selected cloud provider that Grater Expectations should be configured for
     """
     logger.info(
-        "Generating bash script for making docker image and uploading it to ECR"
+        "Generating bash script for making docker image and uploading it to a "
+        "container registry"
     )
-    path = os.path.join(PROJECT_ROOT, args.name)
-    ECR_endpoint = (
-        f'{cfg_global["account_id"]}.dkr.ecr.{cfg_global["region"]}.amazonaws.com'
-    )
-    docker_image = cfg["docker_image_name"]
-    region = cfg_global["region"]
-    ecr_sh = os.path.join(PACKAGE_ROOT, "docs", "templates", "ecr.sh")
-
-    with open(ecr_sh, "r") as filename:
-        template = Template(filename.read())
-        document = template.render(
-            docker_image=docker_image, ECR_endpoint=ECR_endpoint, region=region
+    if provider == "AWS":
+        path = os.path.join(PROJECT_ROOT, args.name)
+        ECR_endpoint = (
+            f'{cfg_global["account_id"]}.dkr.ecr.{cfg_global["region"]}.amazonaws.com'
         )
+        docker_image = cfg["docker_image_name"]
+        region = cfg_global["region"]
+        ecr_sh = os.path.join(PACKAGE_ROOT, "docs", "templates", provider, "ecr.sh")
 
-    with open(
-        os.path.join(PROJECT_ROOT, args.name, "build_image_store_on_ecr.sh"), "w"
-    ) as out:
-        out.write(document)
+        with open(ecr_sh, "r") as filename:
+            template = Template(filename.read())
+            document = template.render(
+                docker_image=docker_image, ECR_endpoint=ECR_endpoint, region=region
+            )
+
+        with open(
+            os.path.join(PROJECT_ROOT, args.name, "build_image_store_on_ecr.sh"), "w"
+        ) as out:
+            out.write(document)
+
+    if provider == "Azure":
+        acr_sh = os.path.join(PACKAGE_ROOT, "docs", "templates", provider, "acr.sh")
+        acr_sh_ouput = os.path.join(
+            PROJECT_ROOT, args.name, "build_image_store_on_acr.sh"
+        )
+        with open(acr_sh, "r") as filename:
+            template = Template(filename.read())
+            document = template.render(cfg=cfg)
+        with open(acr_sh_ouput, "w+") as filename:
+            filename.write(document)
 
 
-def generate_terraform_provider_config(args, cfg_global: dict):
+def generate_terraform_provider_config(args, cfg_global: dict, provider: str):
     """Function to generate Terraform provider configuration files for each Terraform
     directory within a project
 
     Parameters
     ----------
     args:
-        Command line arguments passed at runtime. Expected to contain --project/-p
+        Command line arguments passed at runtime. Expected to contain the .name
+        attribute
     cfg_global : dict
         Global config containing AWS account details
+    provider : str
+        Selected cloud provider that Grater Expectations should be configured for
     """
     logger.info("Creating Terraform provider.tf configuration files")
     # -- 1. Generate document
-    provider = os.path.join(PACKAGE_ROOT, "docs", "templates", "provider.tf")
+    provider = os.path.join(PACKAGE_ROOT, "docs", "templates", provider, "provider.tf")
 
     with open(provider, "r") as filename:
         template = Template(filename.read())
@@ -390,12 +504,13 @@ def generate_terraform_provider_config(args, cfg_global: dict):
 
     # -- 2. Put in all Terraform directories
     tf_dir = os.path.join(PROJECT_ROOT, args.name, "terraform")
-    for path in os.listdir(tf_dir):
+    loop_dirs = [path for path in os.listdir(tf_dir) if path not in [".DS_Store"]]
+    for path in loop_dirs:
         with open(os.path.join(tf_dir, path, "provider.tf"), "w+") as out:
             out.write(document)
 
 
-def generate_terraform_var_files(cfg: dict, args, cfg_global: dict):
+def generate_terraform_var_files(cfg: dict, args, cfg_global: dict, provider: str):
     """Function to generate Terraform variable files that can be used in combination with
     Terraform configuration files to spin up the required AWS services
 
@@ -404,37 +519,84 @@ def generate_terraform_var_files(cfg: dict, args, cfg_global: dict):
     cfg : dict
         Config containing required elements to generate the GE configuration file
     args:
-        Command line arguments passed at runtime. Expected to contain --project/-p
+        Command line arguments passed at runtime. Expected to contain the .name
+        attribute
     cfg_global : dict
         Global config containing AWS account details
+    provider : str
+        Selected cloud provider that Grater Expectations should be configured for
     """
     logger.info("Creating Terraform variable configuration files")
-    # -- 1. Generate Terraform vars for buckets
     path = os.path.join(PROJECT_ROOT, args.name,)
-    document_buckets = f"""ge-bucket-name      = "{cfg["store_bucket"]}"
-    ge-site-bucket-name = "{cfg["site_bucket"]}"
-    ge-data-bucket-name = "{cfg["data_bucket"]}"
-    """
 
-    # -- 2. Generate Terraform vars for lambda
-    image_uri = (
-        f'"{cfg_global["account_id"]}.dkr.ecr.{cfg_global["region"]}.amazonaws.com/'
-        f'{cfg["docker_image_name"]}:latest"'
-    )
-    document_lambda = document_buckets + f"image_uri = {image_uri}"
+    if provider == "AWS":
+        # -- 1. Generate Terraform vars for buckets
+        # TODO: replace w/ template
+        document_buckets = f"""ge-bucket-name      = "{cfg["store_bucket"]}"
+ge-site-bucket-name = "{cfg["site_bucket"]}"
+ge-data-bucket-name = "{cfg["data_bucket"]}"
+        """
 
-    # -- 3. Write files
-    paths_out = [
-        os.path.join(
-            PROJECT_ROOT, args.name, "terraform", "buckets", f"{args.name}.auto.tfvars"
-        ),
-        os.path.join(
-            PROJECT_ROOT, args.name, "terraform", "lambda", f"{args.name}.auto.tfvars"
-        ),
-    ]
-    for path, doc in zip(paths_out, [document_buckets, document_lambda]):
-        with open(path, "w") as out:
-            out.write(doc)
+        # -- 2. Generate Terraform vars for lambda
+        # TODO: replace w/ template
+        image_uri = (
+            f'"{cfg_global["account_id"]}.dkr.ecr.{cfg_global["region"]}.amazonaws.com/'
+            f'{cfg["docker_image_name"]}:latest"'
+        )
+        document_lambda = document_buckets + f"image_uri = {image_uri}"
+
+        # -- 3. Write files
+        paths_out = []
+        for target in ["buckets", "lambda"]:
+            paths_out.append(
+                os.path.join(
+                    PROJECT_ROOT,
+                    args.name,
+                    "terraform",
+                    target,
+                    f"{args.name}.auto.tfvars",
+                )
+            )
+
+        for path, doc in zip(paths_out, [document_buckets, document_lambda]):
+            with open(path, "w") as out:
+                out.write(doc)
+
+    elif provider == "Azure":
+        # -- 1. Generate Terraform vars for storage
+        # TODO: refactor to template
+        document_storage = f"""region = "{cfg_global["region"]}"
+resource_group_name = "{cfg["resource_group_name"]}"
+storage_account_name = "{cfg["storage_account"]}"
+data_container = "{cfg["data_container_name"]}"
+"""
+
+        # -- 2. Generate Terraform vars for function
+        # TODO: refactor to template
+        document_function = f"""resource_group_name = "{cfg["resource_group_name"]}"
+storage_account_name = "{cfg["storage_account"]}"
+app_service_name = "{cfg["function_name"]}-app-service"
+function_name = "{cfg["function_name"]}-function"
+docker_image_name = "{cfg["docker_image_name"]}"
+container_registry_name = "{cfg["container_registry_name"]}"
+"""
+
+        # -- 3. Write files
+        paths_out = []
+        for target in ["storage", "function"]:
+            paths_out.append(
+                os.path.join(
+                    PROJECT_ROOT,
+                    args.name,
+                    "terraform",
+                    target,
+                    f"{args.name}.auto.tfvars",
+                )
+            )
+
+        for path, doc in zip(paths_out, [document_storage, document_function]):
+            with open(path, "w") as out:
+                out.write(doc)
 
 
 def copy_and_overwrite_tree(
@@ -457,61 +619,62 @@ def copy_and_overwrite_tree(
     shutil.copytree(from_path, to_path, ignore=ignore_pattern)
 
 
-def adjust_for_tutorial(args):
+def adjust_for_tutorial(args, provider: str):
     """Helper function to move files into tutorial directory if tutorial is being run"""
     logger.info("Making adjustments for running the tutorial")
     if args.name == "tutorial":
         # -- 1. Add tutorial Terraform files
-        # -- .1 Buckets
-        orig = os.path.join(
-            PACKAGE_ROOT,
-            "bootstrap_files",
-            "tutorial_files",
-            "terraform",
-            "tutorial_bucket",
+        path_terraform_tutorial = os.path.join(
+            PACKAGE_ROOT, "bootstrap_files", provider, "tutorial_files", "terraform"
         )
-        dest = os.path.join(PROJECT_ROOT, args.name, "terraform", "buckets")
-        for tutorial_file in os.listdir(orig):
-            shutil.copy2(
-                os.path.join(orig, tutorial_file), os.path.join(dest, tutorial_file)
-            )
+        sub_directories = os.listdir(path_terraform_tutorial)
+        for sub_dir in sub_directories:
+            # -- .1 Set originating subdir
+            orig = os.path.join(path_terraform_tutorial, sub_dir)
 
-        # # -- .2 Lambda
-        orig = os.path.join(
-            PACKAGE_ROOT,
-            "bootstrap_files",
-            "tutorial_files",
-            "terraform",
-            "tutorial_lambda",
-        )
-        dest = os.path.join(PROJECT_ROOT, args.name, "terraform", "lambda")
-        for tutorial_file in os.listdir(orig):
-            shutil.copy2(
-                os.path.join(orig, tutorial_file), os.path.join(dest, tutorial_file)
-            )
+            # -- .2 Construct target subdir
+            dest = os.path.join(PROJECT_ROOT, args.name, "terraform", sub_dir)
+
+            # -- .3 Copy file
+            for tutorial_file in os.listdir(orig):
+                shutil.copy2(
+                    os.path.join(orig, tutorial_file), os.path.join(dest, tutorial_file)
+                )
 
         # # -- 2. Add tutorial data
-        orig = os.path.join(
-            PACKAGE_ROOT, "bootstrap_files", "tutorial_files", "tutorial_data"
-        )
+        orig = os.path.join(PACKAGE_ROOT, "bootstrap_files", "tutorial_data")
         dest = os.path.join(PROJECT_ROOT, args.name, "data")
         copy_and_overwrite_tree(orig, dest)
 
         # -- 3. Copy tutorial notebook and remove expectation_suite.ipynb
         orig = os.path.join(
-            PACKAGE_ROOT, "bootstrap_files", "tutorial_files", "tutorial_notebook.ipynb"
+            PACKAGE_ROOT,
+            "bootstrap_files",
+            provider,
+            "tutorial_files",
+            "tutorial_notebook.ipynb",
         )
+
         dest = os.path.join(PROJECT_ROOT, args.name, "tutorial_notebook.ipynb")
         shutil.copy2(orig, dest)
         os.remove(os.path.join(PROJECT_ROOT, args.name, "expectation_suite.ipynb"))
 
-        # # -- 4. Replace lambda function
+        # # -- 4. Replace lambda function or Azure function directory
+        function_mapping = {"AWS": "lambda_function.py", "Azure": "function"}
         orig = os.path.join(
-            PACKAGE_ROOT, "bootstrap_files", "tutorial_files", "lambda_function.py"
+            PACKAGE_ROOT,
+            "bootstrap_files",
+            provider,
+            "tutorial_files",
+            function_mapping[provider],
         )
-        dest = os.path.join(PROJECT_ROOT, args.name, "lambda_function.py")
-        shutil.copy2(orig, dest)
+        dest = os.path.join(PROJECT_ROOT, args.name, function_mapping[provider])
 
+        if provider == "AWS":
+            shutil.copy2(orig, dest)
+        elif provider == "Azure":
+            copy_and_overwrite_tree(orig, dest)
+            
 
 def start_notebook(args, notebook_name: str = "expectation_suite"):
     """Helper function to open up the expectation_suite.ipynb notebook upon

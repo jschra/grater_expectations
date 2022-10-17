@@ -39,7 +39,7 @@ def lambda_handler(event, context):
     # -- 0. Load parameters from configuration file and event
     test_config = TestingConfiguration("project_config.yml")
     test_config.load_config()
-    params = event["initialParameters"]
+    params = event
 
     # -- 1. Initialize GE and S3 objects
     s3_client = boto3.client("s3")

@@ -2,6 +2,7 @@
 # Expectations project.
 
 # For the overall project, there are global configurations which contain:
+# - provider: the cloud provider for which the config was initialized. Set to AWS
 # - account_id: the account_id of the AWS account to be used
 # - region: the region used on AWS to deploy resources
 
@@ -33,16 +34,16 @@
 
 global:
   provider: "AWS"
-  account_id: "asasdasdasd"
-  region: "asdasdasdasd"
+  account_id: "MUST_BE_SET"
+  region: "MUST_BE_SET"
 
 tutorial:
   # -- AWS configurations
-  store_bucket: "asdasdasdas"
+  store_bucket: "MUST_BE_SET"
   store_bucket_prefix: ""
-  site_bucket: "asdasdasdasdasd"
+  site_bucket: "MUST_BE_SET"
   site_bucket_prefix: ""
-  docker_image_name: tutorial_image
+  docker_image_name: "tutorial_image"
 
   # -- Great expectations parameters
   site_name: "Tutorial expectations"

@@ -1,0 +1,61 @@
+# config_version refers to the syntactic version of this config file, and is used in maintaining backwards compatibility
+# It is auto-generated and usually does not need to be changed.
+config_version: 3.0
+
+# Datasources tell Great Expectations where your data lives and how to get it.
+datasources:
+  runtime_data:
+    execution_engine:
+      module_name: great_expectations.execution_engine
+      class_name: PandasExecutionEngine
+    data_connectors:
+      runtime_data_connector:
+        batch_identifiers:
+          - batch_identifier
+        class_name: RuntimeDataConnector
+
+expectations_store_name: expectations_store
+validations_store_name: validations_store
+evaluation_parameter_store_name: evaluation_parameter_store
+checkpoint_store_name: checkpoint_store
+profiler_store_name: profiler_store
+        
+stores:
+  expectations_store:
+    class_name: ExpectationsStore
+    store_backend:
+      class_name: TupleAzureBlobStoreBackend
+      container: expectations
+  validations_store:
+      class_name: ValidationsStore
+      store_backend:
+        class_name: TupleAzureBlobStoreBackend
+        container: validations
+  checkpoint_store:
+    class_name: CheckpointStore
+    store_backend:
+      class_name: TupleAzureBlobStoreBackend
+      container: checkpoints
+  profiler_store:
+    class_name: ProfilerStore
+    store_backend:
+      class_name: TupleAzureBlobStoreBackend
+      container: profiler
+  evaluation_parameter_store:
+    class_name: EvaluationParameterStore
+    store_backend:
+      class_name: TupleAzureBlobStoreBackend
+      container: evaluations
+data_docs_sites:
+  {{cfg["site_name"]}}:
+    class_name: SiteBuilder
+    show_how_to_buttons: true
+    store_backend:
+       class_name: TupleAzureBlobStoreBackend
+       container: \$web
+    site_index_builder:
+      class_name: DefaultSiteIndexBuilder
+
+anonymous_usage_statistics:
+  enabled: true
+  data_context_id: {{ idx }}

@@ -27,5 +27,3 @@ setup(
     entry_points={"console_scripts": ["grater = initialize_project:main_program"],},
     python_requires=">=3.8",
 )
-
-    
