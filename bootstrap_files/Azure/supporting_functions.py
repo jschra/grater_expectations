@@ -312,7 +312,10 @@ def generate_ge_site_link(build_data_docs_output: dict) -> str:
     """Helper function to create URL to GE Data Docs website using
     context.build_data_docs() output"""
     url_raw = build_data_docs_output[list(build_data_docs_output.keys())[0]]
-    url_output = url_raw.replace(".blob.", ".z6.web.").replace("/$web/index.html", "")
+    url_os_adjusted = url_raw.replace(os.sep, "/")
+    url_output = url_os_adjusted.replace(".blob.", ".z6.web.").replace(
+        "/$web/index.html", ""
+    )
 
     return url_output
 
