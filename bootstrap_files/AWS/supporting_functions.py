@@ -138,9 +138,7 @@ def get_common_prefixes(
 
 
 # Function to invoke AWS Lambda function
-def invoke_lambda_function(
-    lambda_client: boto3.client("lambda"), payload: bytes, lambda_function: str
-) -> list:
+def invoke_lambda_function(lambda_client, payload, lambda_function):
     """Function to invoke a Lambda function from Python
 
     Parameters
@@ -148,7 +146,7 @@ def invoke_lambda_function(
     lambda_client : boto3.client
         An initialized boto3 client for lambda
     payload : bytes
-        Payload to send to Lambda function in request, expected to contain a json 
+        Payload to send to Lambda function in request, expected to contain a json
         encoded as bytes
     lambda_function : str
         Name of the lambda function
@@ -163,7 +161,9 @@ def invoke_lambda_function(
         f"Invoking AWS Lambda {lambda_function} with payload: {payload.decode('utf-8')}"
     )
     response = lambda_client.invoke(
-        FunctionName=lambda_function, InvocationType="RequestResponse", Payload=payload,
+        FunctionName=lambda_function,
+        InvocationType="RequestResponse",
+        Payload=payload,
     )
 
     if response["ResponseMetadata"]["HTTPStatusCode"] != 200:
