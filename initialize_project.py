@@ -6,6 +6,7 @@ import shutil
 import ruamel.yaml as yaml
 import uuid
 import logging
+from utils.initialize_functions_aws import validate_s3_buckets, validate_region
 
 
 # Constants
@@ -85,8 +86,13 @@ def main_program():
             project_keys = get_config_project_keys(provider)
             evaluate_config_keys(cfg, project_keys, args.name)
 
-        # -- 3. Check if the project exists and if so, if the user wants to continue. Then,
-        # Create directory if needed
+            # -- Apply provider specific checks of config inputs
+            if provider == "AWS":
+                validate_region(cfg_global["region"])
+                validate_s3_buckets(cfg)
+
+        # -- 3. Check if the project exists and if so, if the user wants to continue.
+        # Then, create directory if needed
         _ = check_if_project_exists(args)
         if args.name not in os.listdir():
             os.mkdir(args.name)
@@ -212,7 +218,18 @@ def get_config_project_keys(provider: str) -> list:
             "prefix_data",
         ]
     elif provider == "Azure":
-        project_keys = []
+        project_keys = [
+            "resource_group_name",
+            "storage_account",
+            "function_name",
+            "container_registry_name",
+            "docker_image_name",
+            "site_name",
+            "expectations_suite_name",
+            "checkpoint_name",
+            "run_name_template",
+            "data_container_name",
+        ]
 
     return project_keys
 
@@ -463,9 +480,7 @@ def generate_container_bash_script(cfg: dict, args, cfg_global: dict, provider: 
                 docker_image=docker_image, ECR_endpoint=ECR_endpoint, region=region
             )
 
-        with open(
-            os.path.join(PROJECT_ROOT, args.name, "build_image_store_on_ecr.sh"), "w"
-        ) as out:
+        with open(os.path.join(path, "build_image_store_on_ecr.sh"), "w") as out:
             out.write(document)
 
     if provider == "Azure":
@@ -674,7 +689,7 @@ def adjust_for_tutorial(args, provider: str):
             shutil.copy2(orig, dest)
         elif provider == "Azure":
             copy_and_overwrite_tree(orig, dest)
-            
+
 
 def start_notebook(args, notebook_name: str = "expectation_suite"):
     """Helper function to open up the expectation_suite.ipynb notebook upon
