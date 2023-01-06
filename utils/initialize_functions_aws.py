@@ -35,7 +35,7 @@ def validate_bucket_name(bucket_name: str):
         Name to be used for an S3 bucket
     """
     logging.debug(f"Check validity of bucket name {bucket_name}")
-    s3_client = boto3.resource("s3")
+    s3_resource = boto3.resource("s3")
 
     # -- 1. Bucket name too short
     assert len(bucket_name) >= 3, (
@@ -105,7 +105,7 @@ def validate_bucket_name(bucket_name: str):
     # -- 9. Name must be globally unique
     status_code = None
     try:
-        s3_client.meta.client.head_bucket(Bucket=bucket_name)
+        s3_resource.meta.client.head_bucket(Bucket=bucket_name)
     except botocore.exceptions.ClientError as e:
         status_code = int(e.response["Error"]["Code"])
 
