@@ -22,7 +22,7 @@ setup(
     url="https://github.com/jschra/grater_expectations",
     install_requires=requirements,
     license=license,
-    packages=["."],
+    packages=[".", "utils"],
     include_package_data=True,
     entry_points={"console_scripts": ["grater = initialize_project:main_program"],},
     python_requires=">=3.8",
