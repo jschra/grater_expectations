@@ -2,6 +2,26 @@ import boto3
 import botocore
 import re
 import ipaddress
+import logging
+
+
+def validate_s3_buckets(cfg: dict):
+    """Function to validate the passed S3 bucket names in the config file for a project"
+
+    Parameters
+    ----------
+    cfg : dict
+        The passed config to be checked for buckets
+    """
+    logging.info("Validating bucket names provided in project config")
+
+    # -- 1. Get bucket names
+    BUCKETS = ["store_bucket", "site_bucket", "data_bucket"]
+    list_buckets = [cfg[bucket] for bucket in BUCKETS if cfg[bucket] != ""]
+
+    # -- 2. Validate
+    for bucket_name in list_buckets:
+        validate_bucket_name(bucket_name)
 
 
 def validate_bucket_name(bucket_name: str):
@@ -14,6 +34,7 @@ def validate_bucket_name(bucket_name: str):
     bucket_name : str
         Name to be used for an S3 bucket
     """
+    logging.debug(f"Check validity of bucket name {bucket_name}")
     s3_client = boto3.resource("s3")
 
     # -- 1. Bucket name too short
@@ -91,4 +112,42 @@ def validate_bucket_name(bucket_name: str):
     assert status_code == 404, (
         f"Bucket name {bucket_name} already exists. Please pick a different, globally "
         "unique name for this bucket"
+    )
+
+
+def validate_region(region_name: str):
+    """Function to validate if the provided AWS region is a valid one
+
+    Parameters
+    ----------
+    region_name : str
+        Name of the AWS region
+    """
+    logging.info(f"Check validity of region name {region_name}")
+    list_regions = [
+        "af-south-1",
+        "ap-east-1",
+        "ap-northeast-1",
+        "ap-northeast-2",
+        "ap-northeast-3",
+        "ap-south-1",
+        "ap-southeast-1",
+        "ap-southeast-2",
+        "ca-central-1",
+        "eu-central-1",
+        "eu-north-1",
+        "eu-south-1",
+        "eu-west-1",
+        "eu-west-2",
+        "eu-west-3",
+        "me-south-1",
+        "sa-east-1",
+        "us-east-1",
+        "us-east-2",
+        "us-west-1",
+        "us-west-2",
+    ]
+    assert region_name in list_regions, (
+        f"The provided region, {region_name}, is not valid. Please choose an existing "
+        f"AWS region. Existing regions are: {list_regions}"
     )
