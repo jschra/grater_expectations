@@ -14,7 +14,7 @@ def check_if_config_exists(project_root: str, config_name: str = "testing_config
             "overwrite the existing one (y/[n])?"
         )
         response = input("Input: ")
-        if response in ["y", "Y", "yes", "Yes", "YES"]:
+        if response.lower() in ["y", "yes"]:
             logging.info("Overwriting configuration file")
         else:
             raise SystemExit("Configuration file already exists, stopping creation")
