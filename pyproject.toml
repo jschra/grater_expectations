@@ -1,0 +1,34 @@
+# Link to explanation of content - https://packaging.python.org/en/latest/tutorials/packaging-projects/
+[build-system]
+requires = ["setuptools>=61.0", "setuptools-git-versioning"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "grater_expectations"
+dynamic = ["version", "dependencies"]
+license ={file = "LICENSE"}
+authors = [
+  { name="Jorik Schra", email="j.c.m.schra@gmail.com" },
+]
+description = "A grated application of Great Expectations to create greater Expectations"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Wiki" = "https://github.com/jschra/grater_expectations"
+
+[project.scripts]
+grater = "initialize_project:main_program"
+
+[tool.setuptools-git-versioning]
+enabled = true
+
+[tool.setuptools]
+packages = ["."]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
