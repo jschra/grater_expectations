@@ -20,7 +20,6 @@ jobs:
   build-n-publish:
     name: Build and publish grater expectations to PyPI
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/feature/*'
 
     steps:
     - uses: actions/checkout@v3
