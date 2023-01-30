@@ -1,10 +1,14 @@
+# -- Base Python imports
+import logging
+import re
+
+# -- 3rd party imports
 import boto3
 import botocore
-import re
 import ipaddress
-import logging
 
 
+# -- Functions
 def validate_s3_buckets(cfg: dict):
     """Function to validate the passed S3 bucket names in the config file for a project"
 
