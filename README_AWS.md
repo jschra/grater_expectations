@@ -98,19 +98,6 @@ source env/bin/activate # MacOS
 pip install grater_expectations
 ```
 
-### Option 2 - Anaconda
-Install Grater Expectations via [Anaconda](https://www.anaconda.com/products/distribution)
-
-```bash
-# Create a conda environment
-conda create --name grater_expectations python=3.8
-
-# Activate the conda environment
-conda activate grater_expectations
-
-# Install into the virtual environment
-conda install grater_expectations
-```
 <br>
 <hr>
 
@@ -244,7 +231,7 @@ export AWS_SECRET_ACCESS_KEY=<enter_aws_secret_access_key_here>
 cd tutorial
 
 # Run script from project directory
-sh build_imstage_store_on_ecr.sh
+sh build_image_store_on_ecr.sh
 ```
 
 <br>
