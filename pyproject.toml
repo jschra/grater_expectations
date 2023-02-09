@@ -27,8 +27,5 @@ grater = "initialize_project:main_program"
 [tool.setuptools-git-versioning]
 enabled = true
 
-[tool.setuptools]
-packages = ["."]
-
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
