@@ -99,6 +99,20 @@ pip install grater_expectations
 ```
 
 <br>
+
+### Option 2 - Anaconda
+
+```bash
+# Create a conda environment
+conda create --name grater_expectations python=3.8
+
+# Activate the conda environment
+conda activate grater_expectations
+
+# Install into the virtual environment
+pip install grater_expectations
+```
+<br>
 <hr>
 
 ## Creating a new project
