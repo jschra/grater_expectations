@@ -139,14 +139,14 @@ def get_common_prefixes(
 
 # Function to invoke AWS Lambda function
 def invoke_lambda_function(
-    lambda_client: boto3.client("lambda"), payload: bytes, lambda_function: str
+    lambda_client: boto3.client, payload: bytes, lambda_function: str
 ) -> list:
     """Function to invoke a Lambda function from Python
 
     Parameters
     ----------
     lambda_client : boto3.client
-        An initialized boto3 client for lambda
+        A boto3 client for lambda. It is expected initialised outside of this function.
     payload : bytes
         Payload to send to Lambda function in request, expected to contain a json 
         encoded as bytes
