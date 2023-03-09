@@ -1,5 +1,8 @@
 FROM public.ecr.aws/lambda/python:3.8
 
+# Install gcc compiler
+RUN yum install gcc -y
+
 # Copy function code
 COPY lambda_function.py ${LAMBDA_TASK_ROOT}
 COPY supporting_functions.py ${LAMBDA_TASK_ROOT}

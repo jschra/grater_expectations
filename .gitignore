@@ -79,3 +79,6 @@ tutorial
 # Pip build
 build/
 grater_expectations.egg-info/
+
+# Yml
+testing_config.yml
