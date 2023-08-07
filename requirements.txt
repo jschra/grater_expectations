@@ -109,3 +109,5 @@ webencodings==0.5.1
 widgetsnbextension==3.6.0
 wincertstore==0.2
 zipp==3.7.0
+build==0.8.0
+setuptools>=61.0
