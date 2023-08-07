@@ -12,7 +12,7 @@ authors = [
 ]
 description = "A grated application of Great Expectations to create greater Expectations"
 readme = "README.md"
-requires-python = "==3.8"
+requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
