@@ -11,7 +11,7 @@ name: Build and Test Grater Expectations Package
 on:
   push:
     tags:
-      - v*.*
+      - v*.*.*
 
 permissions:
   contents: read

@@ -10,7 +10,7 @@ name: Build and Publish Grater Expectations Package
 
 on:
   release:
-    types: [published]
+    types: [published, created]
 
 permissions:
   contents: read
