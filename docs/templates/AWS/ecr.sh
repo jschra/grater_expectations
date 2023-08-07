@@ -8,7 +8,7 @@ chmod 644 $(find . -type f)
 chmod 755 $(find . -type d)
 
 # Build image
-docker build -t {{ docker_image }} .
+docker build -t {{ docker_image }} . --platform=linux/amd64
 
 # Log into AWS and ECR
 aws ecr get-login-password --region {{ region }} | docker login --username AWS --password-stdin {{ ECR_endpoint }}
