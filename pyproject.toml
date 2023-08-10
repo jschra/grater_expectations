@@ -24,8 +24,12 @@ classifiers = [
 [project.scripts]
 grater = "initialize_project:main_program"
 
+[tool.setuptools.packages.find]
+where = [".", "utils"]
+
 [tool.setuptools-git-versioning]
 enabled = true
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
+
