@@ -1,6 +1,6 @@
 # Link to explanation of content - https://packaging.python.org/en/latest/tutorials/packaging-projects/
 [build-system]
-requires = ["setuptools>=61.0", "setuptools-git-versioning"]
+requires = ["setuptools>=61.2", "setuptools-git-versioning"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -23,9 +23,6 @@ classifiers = [
 
 [project.scripts]
 grater = "initialize_project:main_program"
-
-[tool.setuptools.packages.find]
-where = [".", "utils"]
 
 [tool.setuptools-git-versioning]
 enabled = true

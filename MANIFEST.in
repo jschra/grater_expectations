@@ -1,5 +1,5 @@
-include testing_config.yml
 include requirements.txt
+include initialize_project.py
 
 recursive-include docs *
 recursive-include bootstrap_files *
